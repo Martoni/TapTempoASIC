@@ -4,7 +4,7 @@
 * Fabien Marteau <mail@fabienm.eu>
 */
 
-module Debounce #(
+module debounce #(
 //    parameter CLK_PER_NS = 40,
     parameter PULSE_PER_NS = 4096,
     parameter DEBOUNCE_PER_NS = 16_777_216
@@ -81,5 +81,13 @@ begin
 end
 
 assign btn_o = (state_reg == s_cnt_high) || (state_reg == s_wait_high);
+
+`ifdef COCOTB_SIM
+initial begin
+  $dumpfile ("debounce.vcd");
+  $dumpvars (0, debounce);
+  #1;
+end
+`endif
 
 endmodule
