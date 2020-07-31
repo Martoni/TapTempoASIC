@@ -16,13 +16,21 @@ from cocotb.triggers import RisingEdge
 from cocotb.triggers import FallingEdge
 from cocotb.triggers import ClockCycles
 
+SIM = 'icarus'
+#SIM = 'verilator'
+
 class TestDebounce(object):
     CLK_PER = (40, "ns")
 
     def __init__(self, dut):
         self._dut = dut
-        self.PULSE_PER_NS = int(dut.PULSE_PER_NS)
-        self.DEBOUNCE_PER_NS = int(dut.DEBOUNCE_PER_NS)
+        if SIM == 'icarus':
+            self.PULSE_PER_NS = int(dut.PULSE_PER_NS)
+            self.DEBOUNCE_PER_NS = int(dut.DEBOUNCE_PER_NS)
+        else:
+            self.PULSE_PER_NS = 4096
+            self.DEBOUNCE_PER_NS = 16777216
+
         self.log = dut._log
         self.rst = dut.rst_i
         self.clk = dut.clk_i

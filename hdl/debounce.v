@@ -82,6 +82,7 @@ end
 
 assign btn_o = (state_reg == s_cnt_high) || (state_reg == s_wait_high);
 
+
 `ifdef COCOTB_SIM
 initial begin
   $dumpfile ("debounce.vcd");
