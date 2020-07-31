@@ -63,6 +63,19 @@ class TestDebounce(object):
                 self.tp <= 1
                 counter = 0
 
+    async def bounce_up(self, bounce_num=10, bounce_per=(500, "us"), up=True):
+        bounce_sum = bounce_num*(1+bounce_num)/2
+        bounce_per_min = (bounce_per[0]/bounce_sum)/2
+        for i in range(bounce_num):
+            self.btn_i <= 1 if up else 0
+            await Timer(int((i+1)*bounce_per_min), units=bounce_per[1])
+            self.btn_i <= 0 if up else 1
+            await Timer(int((i+1)*bounce_per_min), units=bounce_per[1])
+        self.btn_i <= 1 if up else 0
+
+    async def bounce_down(self, bounce_num=10, bounce_per=(500, "us")):
+        await self.bounce_up(bounce_num, bounce_per, up=False)
+
     async def reset(self):
         self.rst <= 1
         self.btn_i <= 0
@@ -78,18 +91,11 @@ async def debounce_test(dut):
     td.log.info("Running test!")
     await td.reset()
     td.log.info("System reseted!")
-    await Timer(1, units="us")
-    td.btn_i <= 1
-    await Timer(1, units="us")
-    td.btn_i <= 0
-    await Timer(2, units="us")
-    td.btn_i <= 1
-    await Timer(5, units="us")
-    td.btn_i <= 0
-    await Timer(7, units="us")
-    td.btn_i <= 1
-    await Timer(10, units="us")
-    td.btn_i <= 0
-    await Timer(10, units="us")
-    td.btn_i <= 1
-    await Timer(1, units="ms")
+    td.log.info("up")
+    await td.bounce_up(10, bounce_per=(10000, "us"))
+    td.log.info("wait")
+    await Timer(20, "ms")
+    td.log.info("down")
+    await td.bounce_down(10, bounce_per=(10000, "us"))
+    td.log.info("wait")
+    await Timer(20, "ms")

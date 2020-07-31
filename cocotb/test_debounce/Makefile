@@ -16,3 +16,10 @@ VERILOG_SOURCES = $(PWD)/../../hdl/debounce.v
 TOPLEVEL=debounce
 MODULE=test_$(TOPLEVEL)
 include $(shell cocotb-config --makefile)/Makefile.sim
+
+# Coverage
+ifeq ($(SIM),verilator)
+cover/debounce.v: coverage.dat
+	verilator_coverage --annotate cover coverage.dat
+endif
+
