@@ -7,7 +7,11 @@
 module debounce #(
 //    parameter CLK_PER_NS = 40,
     parameter PULSE_PER_NS = 4096,
+`ifdef COCOTB_SIM
+    parameter DEBOUNCE_PER_NS = 8192
+`else
     parameter DEBOUNCE_PER_NS = 16_777_216
+`endif
 )(
     /* clock and reset */
     input clk_i,
@@ -59,31 +63,34 @@ begin
     case(state_reg)
         s_wait_low:
             if(btn_i)
-                state_next <= s_cnt_high;
+                state_next = s_cnt_high;
             else
-                state_next <= s_wait_low;
+                state_next = s_wait_low;
         s_wait_high:
             if(!btn_i)
-                state_next <= s_cnt_low;
+                state_next = s_cnt_low;
             else
-                state_next <= s_wait_high;
+                state_next = s_wait_high;
         s_cnt_high:
+            /* verilator lint_off WIDTH */
             if(counter == `MAX_COUNT)
-                state_next <= s_wait_high;
+            /* verilator lint_on WIDTH */
+                state_next = s_wait_high;
             else
-                state_next <= s_cnt_high;
+                state_next = s_cnt_high;
         s_cnt_low:
+            /* verilator lint_off WIDTH */
             if(counter == `MAX_COUNT)
-                state_next <= s_wait_low;
+            /* verilator lint_on WIDTH */
+                state_next = s_wait_low;
             else
-                state_next <= s_cnt_low;
+                state_next = s_cnt_low;
     endcase;
 end
 
 assign btn_o = (state_reg == s_cnt_high) || (state_reg == s_wait_high);
 
-
-`ifdef COCOTB_SIM
+`ifdef COCOTB_ICARUS
 initial begin
   $dumpfile ("debounce.vcd");
   $dumpvars (0, debounce);

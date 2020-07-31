@@ -16,21 +16,17 @@ from cocotb.triggers import RisingEdge
 from cocotb.triggers import FallingEdge
 from cocotb.triggers import ClockCycles
 
-SIM = 'icarus'
-#SIM = 'verilator'
-
 class TestDebounce(object):
     CLK_PER = (40, "ns")
 
     def __init__(self, dut):
         self._dut = dut
-        if SIM == 'icarus':
+        if cocotb.SIM_NAME == 'Icarus Verilog':
             self.PULSE_PER_NS = int(dut.PULSE_PER_NS)
             self.DEBOUNCE_PER_NS = int(dut.DEBOUNCE_PER_NS)
         else:
             self.PULSE_PER_NS = 4096
-            self.DEBOUNCE_PER_NS = 16777216
-
+            self.DEBOUNCE_PER_NS = 8192
         self.log = dut._log
         self.rst = dut.rst_i
         self.clk = dut.clk_i
@@ -40,8 +36,19 @@ class TestDebounce(object):
                 Clock(self.clk, 100, units="ns").start())
         self._tp_thread = cocotb.fork(self.time_pulse())
 
+    @classmethod
+    def freq(cls, clkper):
+        units = {"ps": "GHz",
+                 "ns": "MHz",
+                 "us": "KHz", 
+                 "ms": " Hz",
+                 "s" : "mHz"}
+        return "{} {}".format(1000/float(clkper[0]), units[clkper[1]])
+
     def display_config(self):
         self.log.info("Configuration :")
+        self.log.info("Clock period given : {} {}".format(*self.CLK_PER))
+        self.log.info("Freq : {}".format(self.freq(self.CLK_PER)))
         self.log.info("PULSE_PER_NS = {} ns".format(self.PULSE_PER_NS))
         self.log.info("DEBOUNCE_PER_NS = {} ns".format(self.DEBOUNCE_PER_NS))
     

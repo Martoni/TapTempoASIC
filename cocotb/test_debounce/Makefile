@@ -1,14 +1,14 @@
-#SIM=verilator
-SIM=icarus
+SIM=verilator
+#SIM=icarus
 
-ifeq (SIM, verilator)
-export COCOTB_VERILATOR=1
+ifeq ($(SIM),verilator)
+COMPILE_ARGS=-DCOCOTB_VERILATOR
 export COCOTB_HDL_TIMEPRECISION=1ns
+EXTRA_ARGS += --trace --trace-structs --coverage
 endif
 
-#XXX does not works
-ifeq (SIM, icarus)
-export COCOTB_ICARUS=1
+ifeq ($(SIM),icarus)
+COMPILE_ARGS += -DCOCOTB_ICARUS
 endif
 
 export COCOTB_REDUCED_LOG_FMT=1
