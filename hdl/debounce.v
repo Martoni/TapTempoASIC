@@ -24,7 +24,7 @@ module debounce #(
 );
 
 
-`define MAX_COUNT (DEBOUNCE_PER_NS/PULSE_PER_NS)
+`define MAX_COUNT ((DEBOUNCE_PER_NS/PULSE_PER_NS)-1'b1)
 `define MAX_COUNT_SIZE ($clog2(`MAX_COUNT))
 
 /* Counter */
