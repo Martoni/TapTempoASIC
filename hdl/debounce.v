@@ -23,7 +23,6 @@ module debounce #(
     output btn_o
 );
 
-
 `define MAX_COUNT ((DEBOUNCE_PER_NS/PULSE_PER_NS)-1'b1)
 `define MAX_COUNT_SIZE ($clog2(`MAX_COUNT))
 
@@ -95,6 +94,12 @@ initial begin
   $dumpfile ("debounce.vcd");
   $dumpvars (0, debounce);
   #1;
+end
+`endif
+
+`ifdef FORMAL
+always@(posedge clk_i) begin
+    assert(count < 8); 
 end
 `endif
 

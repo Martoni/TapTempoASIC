@@ -69,7 +69,7 @@ class TestDebounce(object):
     async def bounce_up(self, bounce_num=10, bounce_per=(500, "us"), up=True):
         bounce_sum = bounce_num*(1+bounce_num)/2
         bounce_per_min = (bounce_per[0]/bounce_sum)/2
-        for i in range(bounce_num):
+        for i in reversed(range(bounce_num)):
             if up:
                 self.btn_i <= 1
             else:
@@ -111,3 +111,17 @@ async def debounce_test(dut):
     await td.bounce_down(10, bounce_per=(10000, "ns"))
     td.log.info("wait")
     await Timer(20, "ms")
+
+@cocotb.test()
+async def debounce_upanddown(dut):
+    td = TestDebounce(dut)
+    td.display_config()
+    td.log.info("Running test!")
+    await td.reset()
+    td.log.info("System reseted!")
+    for i in range(10):
+        td.log.info("up")
+        await td.bounce_up(10, bounce_per=(10000, "ns"))
+        td.log.info("down")
+        await td.bounce_down(10, bounce_per=(10000, "ns"))
+
