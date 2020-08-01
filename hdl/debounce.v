@@ -98,8 +98,19 @@ end
 `endif
 
 `ifdef FORMAL
+
+initial
+    counter <= 0;
+
+always@*
+begin
+    assume(rst_i == 0);
+    assert(counter < `MAX_COUNT);
+end
+
 always@(posedge clk_i) begin
-    assert(count < 8); 
+    if(state_reg == s_wait_high)
+        assert(counter == 0);
 end
 `endif
 
