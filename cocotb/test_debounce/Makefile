@@ -1,5 +1,5 @@
-SIM=verilator
-#SIM=icarus
+#SIM=verilator
+SIM=icarus
 
 ifeq ($(SIM),verilator)
 COMPILE_ARGS=-DCOCOTB_VERILATOR

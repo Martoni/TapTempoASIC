@@ -17,7 +17,8 @@ from cocotb.triggers import FallingEdge
 from cocotb.triggers import ClockCycles
 
 class TestDebounce(object):
-    CLK_PER = (40, "ns")
+    #CLK_PER = (40, "ns")
+    CLK_PER = (2560, "ns")
 
     def __init__(self, dut):
         self._dut = dut
@@ -69,11 +70,20 @@ class TestDebounce(object):
         bounce_sum = bounce_num*(1+bounce_num)/2
         bounce_per_min = (bounce_per[0]/bounce_sum)/2
         for i in range(bounce_num):
-            self.btn_i <= 1 if up else 0
+            if up:
+                self.btn_i <= 1
+            else:
+                self.btn_i <= 0
             await Timer(int((i+1)*bounce_per_min), units=bounce_per[1])
-            self.btn_i <= 0 if up else 1
+            if up:
+                self.btn_i <= 0
+            else:
+                self.btn_i <= 1
             await Timer(int((i+1)*bounce_per_min), units=bounce_per[1])
-        self.btn_i <= 1 if up else 0
+        if up:
+            self.btn_i <= 1
+        else:
+            self.btn_i <= 0
 
     async def bounce_down(self, bounce_num=10, bounce_per=(500, "us")):
         await self.bounce_up(bounce_num, bounce_per, up=False)
