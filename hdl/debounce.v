@@ -6,8 +6,8 @@
 
 module debounce #(
 //    parameter CLK_PER_NS = 40,
-    parameter PULSE_PER_NS = 4096,
-    parameter DEBOUNCE_PER_NS = 16_777_216
+    parameter PULSE_PER_NS = 5120,
+    parameter DEBOUNCE_PER_NS = 20_971_520
 )(
     /* clock and reset */
     input clk_i,
