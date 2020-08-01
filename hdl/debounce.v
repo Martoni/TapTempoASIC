@@ -7,7 +7,11 @@
 module debounce #(
 //    parameter CLK_PER_NS = 40,
     parameter PULSE_PER_NS = 5120,
+`ifdef COCOTB_SIM
+    parameter DEBOUNCE_PER_NS = (5120*8)
+`else
     parameter DEBOUNCE_PER_NS = 20_971_520
+`endif
 )(
     /* clock and reset */
     input clk_i,
