@@ -1,0 +1,7 @@
+#
+# state filter for debounce.v
+#
+00 s_wait_low
+01 s_wait_high
+10 s_cnt_high
+11 s_cnt_low
