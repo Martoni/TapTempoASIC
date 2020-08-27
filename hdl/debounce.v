@@ -48,11 +48,14 @@ begin
         counter <= 0;
     else
     begin
-        if((state_reg == s_cnt_high) || (state_reg == s_cnt_low))
+        if(tp_i)
         begin
-            if(tp_i)
+            if((state_reg == s_cnt_high) || (state_reg == s_cnt_low))
                 counter <= counter + 1'b1;
-        end else
+            else
+                counter <= 0;
+        end
+        else if((state_reg == s_wait_low) || (state_reg == s_wait_high))
             counter <= 0;
     end
 end
@@ -126,7 +129,8 @@ end
 
 always @(posedge clk_i) begin
 	past_valid <= 1'b1;
-    assume(rst_i == 0);
+    if(past_valid)
+        rst_i <= 0;
 
     /* tp_i must be 1 cycle length */
     if(tp_i == 1 && past_valid)
@@ -135,8 +139,8 @@ end
 
 always @(posedge clk_i) begin
     /* counter increase on tp_i */
-    if(tp_i && counter > 0 && past_valid)
-        assert($past(counter) + 1 == counter);
+    if(!tp_i && $past(tp_i) && counter > 1 && past_valid)
+        assert(($past(counter, 2) + 1 == counter));
 
     /* btn_o is stable if counter count */
     if(counter > 0)
@@ -145,11 +149,11 @@ always @(posedge clk_i) begin
     cover(counter == `MAX_COUNT);
     cover(counter == $past(counter) + 1);
 
-//    cover(state_reg == s_cnt_high);
-//    cover(state_reg == s_wait_low);
-//    cover(state_reg == s_wait_highend);
-//    cover(state_reg == s_cnt_high);
-//    cover(state_reg == s_cnt_low);
+    cover(state_reg == s_cnt_high);
+    cover(state_reg == s_wait_low);
+    cover(state_reg == s_wait_highend);
+    cover(state_reg == s_cnt_high);
+    cover(state_reg == s_cnt_low);
 
 end
 
