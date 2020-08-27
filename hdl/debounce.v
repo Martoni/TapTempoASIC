@@ -23,23 +23,37 @@ module debounce #(
     output btn_o
 );
 
-`define MAX_COUNT ((DEBOUNCE_PER_NS/PULSE_PER_NS)-1'b1)
+`ifdef FORMAL
+    `define MAX_COUNT (20)
+`else
+    `define MAX_COUNT ((DEBOUNCE_PER_NS/PULSE_PER_NS)-1'b1)
+`endif 
 `define MAX_COUNT_SIZE ($clog2(`MAX_COUNT))
 
 /* Counter */
-reg [`MAX_COUNT_SIZE-1:0] counter;
+reg [`MAX_COUNT_SIZE-1:0] counter = 0;
+
+/* Display parameters in simulation */
+initial
+begin
+    $display("DEBOUNCE_PER_NS : %d", DEBOUNCE_PER_NS);
+    $display("PULSE_PER_NS    : %d", PULSE_PER_NS);
+    $display("MAX_COUNT       : %x", `MAX_COUNT);
+    $display("MAX_COUNT_SIZE  : %x", `MAX_COUNT_SIZE);
+end
 
 always@(posedge clk_i or posedge rst_i)
 begin
     if(rst_i)
         counter <= 0;
-    else begin
-        if(tp_i) begin
-            if((state_reg == s_cnt_high) || (state_reg == s_cnt_low))
+    else
+    begin
+        if((state_reg == s_cnt_high) || (state_reg == s_cnt_low))
+        begin
+            if(tp_i)
                 counter <= counter + 1'b1;
-            else
-                counter <= 0;
-        end
+        end else
+            counter <= 0;
     end
 end
 
@@ -89,6 +103,9 @@ end
 
 assign btn_o = (state_reg == s_cnt_high) || (state_reg == s_wait_high);
 
+/****************************/
+/* Cocotb icarus simulation */
+/****************************/
 `ifdef COCOTB_ICARUS
 initial begin
   $dumpfile ("debounce.vcd");
@@ -97,21 +114,45 @@ initial begin
 end
 `endif
 
+/*********************/
+/* Yosys formal part */
+/*********************/
 `ifdef FORMAL
 
-initial
-    counter <= 0;
+initial begin
+    past_valid <= 1'b0;
+    rst_i <= 1'b1;
+end
 
-always@*
-begin
+always @(posedge clk_i) begin
+	past_valid <= 1'b1;
     assume(rst_i == 0);
-    assert(counter < `MAX_COUNT);
+
+    /* tp_i must be 1 cycle length */
+    if(tp_i == 1 && past_valid)
+        assume($past(tp_i, 1) == !tp_i);
 end
 
-always@(posedge clk_i) begin
-    if(state_reg == s_wait_high)
-        assert(counter == 0);
+always @(posedge clk_i) begin
+    /* counter increase on tp_i */
+    if(tp_i && counter > 0 && past_valid)
+        assert($past(counter) + 1 == counter);
+
+    /* btn_o is stable if counter count */
+    if(counter > 0)
+        assert($stable(btn_o));
+
+    cover(counter == `MAX_COUNT);
+    cover(counter == $past(counter) + 1);
+
+//    cover(state_reg == s_cnt_high);
+//    cover(state_reg == s_wait_low);
+//    cover(state_reg == s_wait_highend);
+//    cover(state_reg == s_cnt_high);
+//    cover(state_reg == s_cnt_low);
+
 end
+
 `endif
 
 endmodule
