@@ -1,0 +1,15 @@
+[options]
+mode cover 
+#mode bmc
+#mode prove
+depth 150 
+
+[engines]
+smtbmc
+
+[script]
+read -formal percount.v
+prep -top percount
+
+[files]
+../../hdl/percount.v
