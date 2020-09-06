@@ -1,0 +1,15 @@
+[options]
+mode cover
+#mode bmc
+#mode prove
+depth 150
+
+[engines]
+smtbmc
+
+[script]
+read -formal per2bpm.v
+prep -top per2bpm
+
+[files]
+../../hdl/per2bpm.v

@@ -10,7 +10,7 @@
 module percount #(
     parameter CLK_PER_NS = 40,
     parameter PULSE_PER_NS = 5120,
-    parameter BPM_REG_SIZE = $clog2(`BPM_PER_MAX + 1)
+    parameter BPMPER_REG_SIZE = $clog2(`BPM_PER_MAX + 1)
 )(
     /* clock and reset */
     input clk_i,
@@ -20,7 +20,7 @@ module percount #(
     /* input button */
     input btn_i,
     /* output period */
-    output [BPM_REG_SIZE:0] btn_per_o,
+    output [BPMPER_REG_SIZE:0] btn_per_o,
     output btn_per_valid);
 
 /* Display parameters in simulation */
@@ -29,10 +29,10 @@ begin
     $display("CLK_PER_NS   : %d", CLK_PER_NS );
     $display("PULSE_PER_NS : %d", PULSE_PER_NS);
     $display("BPM_PER_MAX  : %d", `BPM_PER_MAX);
-    $display("BPM_REG_SIZE  : %d", BPM_REG_SIZE);
+    $display("BPMPER_REG_SIZE  : %d", BPMPER_REG_SIZE);
 end
 
-reg [BPM_REG_SIZE:0] counter = 0;
+reg [BPMPER_REG_SIZE:0] counter = 0;
 reg counter_valid = 0;
 
 assign btn_per_valid = counter_valid;
