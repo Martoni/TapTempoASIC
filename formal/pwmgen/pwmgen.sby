@@ -1,6 +1,6 @@
 [options]
-mode cover
-#mode bmc
+#mode cover
+mode bmc
 #mode prove
 depth 100
 
