@@ -1,0 +1,15 @@
+[options]
+mode cover
+#mode bmc
+#mode prove
+depth 100
+
+[engines]
+smtbmc
+
+[script]
+read -formal pwmgen.v
+prep -top pwmgen
+
+[files]
+../../hdl/pwmgen.v
