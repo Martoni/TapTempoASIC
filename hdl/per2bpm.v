@@ -5,17 +5,17 @@
 * bpm_o = (MIN_NS/TP_CYCLE)/btn_per_i
 */
 
-`define BPM_MAX 250
-`define BPM_SIZE ($clog2(`BPM_MAX + 1))
+`define BPM_SIZE ($clog2(BPM_MAX + 1))
 
 `define MIN_NS 60_000_000_000
 `define BTN_PER_MAX ((`MIN_NS/CLK_PER_NS)/TP_CYCLE)
 `define BTN_PER_SIZE ($clog2(1 + `BTN_PER_MAX))
-`define BTN_PER_MIN ((`MIN_NS/(TP_CYCLE*CLK_PER_NS))/`BPM_MAX)
+`define BTN_PER_MIN ((`MIN_NS/(TP_CYCLE*CLK_PER_NS))/BPM_MAX)
 
 module per2bpm #(
     parameter CLK_PER_NS = 40,
     parameter TP_CYCLE = 5120,
+    parameter BPM_MAX = 250
 )(
     /* clock and reset */
     input clk_i,
@@ -69,7 +69,6 @@ begin
             state_next = s_init;
     endcase
 end
-
 
 always@(posedge clk_i or posedge rst_i)
 begin
@@ -136,12 +135,12 @@ begin
     /* verify division result */
     if(state_reg == s_result)
         if(fdivident < `BTN_PER_MIN)
-            assert(bpm_o == `BPM_MAX);
+            assert(bpm_o == BPM_MAX);
         else
             assert(bpm_o == (`MIN_NS/(TP_CYCLE*CLK_PER_NS))/fdivident);
 
     assert(state_reg  != 2'h3);
-    assert(bpm_o <= `BPM_MAX);
+    assert(bpm_o <= BPM_MAX);
     cover(state_reg == s_init);
     cover(state_reg == s_compute);
     cover(state_reg == s_result);
