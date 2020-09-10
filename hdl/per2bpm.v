@@ -2,35 +2,41 @@
 /* Debouncer
 * The TapTempo Project
 * Fabien Marteau <mail@fabienm.eu>
-* bpm_o = (MIN_NS/PULSE_PER_NS)/btn_per_i
+* bpm_o = (MIN_NS/TP_CYCLE)/btn_per_i
 */
 
-`define BPMPER_MAX 62_600
 `define BPM_MAX 250
+`define BPM_SIZE ($clog2(`BPM_MAX + 1))
+
 `define MIN_NS 60_000_000_000
+`define BTN_PER_MAX ((`MIN_NS/CLK_PER_NS)/TP_CYCLE)
+`define BTN_PER_SIZE ($clog2(1 + `BTN_PER_MAX))
+`define BTN_PER_MIN ((`MIN_NS/(TP_CYCLE*CLK_PER_NS))/`BPM_MAX)
 
 module per2bpm #(
     parameter CLK_PER_NS = 40,
-    parameter PULSE_PER_NS = 5120,
-    parameter BPMPER_REG_SIZE = $clog2(1 + `BPMPER_MAX)
+    parameter TP_CYCLE = 5120,
 )(
     /* clock and reset */
     input clk_i,
     input rst_i,
+
     /* inputs */
-    input [(BPMPER_REG_SIZE-1):0] btn_per_i,
+    input [(`BTN_PER_SIZE-1):0] btn_per_i,
     input btn_per_valid,
+
     /* outputs */
-    output [$clog2(`BPM_MAX + 1) - 1:0] bpm_o,
+    output [`BPM_SIZE - 1:0] bpm_o,
     output bpm_valid
 );
 
-`define REGWIDTH (40)
+`define DIVIDENTWITH ($clog2(1 + `MIN_NS/(TP_CYCLE*CLK_PER_NS)))
+`define REGWIDTH (`BTN_PER_SIZE + `DIVIDENTWITH)
 
 reg [(`REGWIDTH-1):0] divisor;
 reg [(`REGWIDTH-1):0] remainder;
-reg [23:0] quotient;
-reg [$clog2(`REGWIDTH + 1):0] ctrlcnt;
+reg [(`REGWIDTH-1):0] quotient;
+reg [($clog2(`REGWIDTH + 1)):0] ctrlcnt;
 
 localparam [1:0] s_init    = 2'h0,
                  s_compute = 2'h1,
@@ -76,18 +82,21 @@ begin
     end else begin
         if(state_reg == s_init)
         begin
-            divisor <= {btn_per_i, 23'h0};
-            remainder <= `MIN_NS/PULSE_PER_NS;
+            if(btn_per_i < `BTN_PER_MIN)
+                divisor <= {`BTN_PER_MIN, (`DIVIDENTWITH)'h0};
+            else
+                divisor <= {btn_per_i, (`DIVIDENTWITH)'h0};
+            remainder <= `MIN_NS/(TP_CYCLE*CLK_PER_NS);
             quotient <= 0;
-            ctrlcnt <= `REGWIDTH;
+            ctrlcnt <= `DIVIDENTWITH;
         end else if(state_reg == s_compute)
         begin
-            if(divisor < remainder)
+            if(divisor <= remainder)
             begin
-                remainder <= divisor - remainder;
-                quotient <= {quotient[22:0], 1'b1};
+                remainder <= remainder - divisor;
+                quotient <= {quotient[(`DIVIDENTWITH-2):0], 1'b1};
             end else begin
-                quotient <= {quotient[22:0], 1'b0};
+                quotient <= {quotient[(`DIVIDENTWITH-2):0], 1'b0};
             end
             divisor <= {1'b0, divisor[(`REGWIDTH-1):1]};
             ctrlcnt <= ctrlcnt - 1'b1;
@@ -95,7 +104,7 @@ begin
     end
 end
 
-assign bpm_o = quotient[15:0];
+assign bpm_o = quotient[(`BPM_SIZE-1):0];
 assign bpm_valid = (state_reg == s_result);
 
 /*********************/
@@ -104,10 +113,12 @@ assign bpm_valid = (state_reg == s_result);
 `ifdef FORMAL
 
 reg past_valid;
+reg [(`BTN_PER_SIZE - 1):0] fdivident;
 
 initial begin
     past_valid <= 1'b0;
     assume(rst_i);
+    fdivident <= 0;
 end
 
 always @(posedge clk_i)
@@ -119,15 +130,23 @@ begin
     if(rst_i)
         assert(ctrlcnt == `REGWIDTH);
 
-    assume(btn_per_i != 0);
-    assume(btn_per_i <= `BPMPER_MAX);
+    if(state_reg == s_init)
+        fdivident <=  btn_per_i;
+
+    /* verify division result */
+    if(state_reg == s_result)
+        if(fdivident < `BTN_PER_MIN)
+            assert(bpm_o == `BPM_MAX);
+        else
+            assert(bpm_o == (`MIN_NS/(TP_CYCLE*CLK_PER_NS))/fdivident);
+
     assert(state_reg  != 2'h3);
+    assert(bpm_o <= `BPM_MAX);
     cover(state_reg == s_init);
     cover(state_reg == s_compute);
     cover(state_reg == s_result);
 end
 
 `endif
-
 
 endmodule
