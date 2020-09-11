@@ -44,11 +44,9 @@ wire btn_rise = (!btn_old) & btn_i;
 always@(posedge clk_i or posedge rst_i)
 begin
     if(rst_i)
-        btn_old <= btn_i;
+        btn_old <= 1'b0;
     else
-    begin
         btn_old <= btn_i;     
-    end
 end
 
 always@(posedge clk_i or posedge rst_i)
