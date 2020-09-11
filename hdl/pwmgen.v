@@ -57,7 +57,7 @@ begin
     end
 end
 
-assign pwm_o = (count < pwmthreshold);
+assign pwm_o = (count <= pwmthreshold);
 
 /*********************/
 /* Yosys formal part */
