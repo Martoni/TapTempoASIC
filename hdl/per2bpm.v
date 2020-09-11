@@ -8,9 +8,9 @@
 `define BPM_SIZE ($clog2(BPM_MAX + 1))
 
 `define MIN_NS 60_000_000_000
-`define BTN_PER_MAX ((`MIN_NS/CLK_PER_NS)/TP_CYCLE)
+`define BTN_PER_MAX (`MIN_NS/TP_CYCLE)
 `define BTN_PER_SIZE ($clog2(1 + `BTN_PER_MAX))
-`define BTN_PER_MIN ((`MIN_NS/(TP_CYCLE*CLK_PER_NS))/BPM_MAX)
+`define BTN_PER_MIN ((`MIN_NS/(TP_CYCLE))/BPM_MAX)
 
 module per2bpm #(
     parameter CLK_PER_NS = 40,
@@ -30,7 +30,7 @@ module per2bpm #(
     output bpm_valid
 );
 
-`define DIVIDENTWITH ($clog2(1 + `MIN_NS/(TP_CYCLE*CLK_PER_NS)))
+`define DIVIDENTWITH ($clog2(1 + `MIN_NS/(TP_CYCLE)))
 `define REGWIDTH (`BTN_PER_SIZE + `DIVIDENTWITH)
 
 reg [(`REGWIDTH-1):0] divisor;
@@ -85,7 +85,7 @@ begin
                 divisor <= {`BTN_PER_MIN, (`DIVIDENTWITH)'h0};
             else
                 divisor <= {btn_per_i, (`DIVIDENTWITH)'h0};
-            remainder <= `MIN_NS/(TP_CYCLE*CLK_PER_NS);
+            remainder <= `MIN_NS/TP_CYCLE;
             quotient <= 0;
             ctrlcnt <= `DIVIDENTWITH;
         end else if(state_reg == s_compute)
@@ -137,7 +137,7 @@ begin
         if(fdivident < `BTN_PER_MIN)
             assert(bpm_o == BPM_MAX);
         else
-            assert(bpm_o == (`MIN_NS/(TP_CYCLE*CLK_PER_NS))/fdivident);
+            assert(bpm_o == (`MIN_NS/TP_CYCLE)/fdivident);
 
     assert(state_reg  != 2'h3);
     assert(bpm_o <= BPM_MAX);
