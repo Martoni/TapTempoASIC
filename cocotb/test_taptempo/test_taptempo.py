@@ -4,7 +4,7 @@
 # Author:   Fabien Marteau <mail@fabienm.eu>
 # Created:  30/07/2020
 #-----------------------------------------------------------------------------
-""" test_debounce
+""" test_taptempo
 """
 
 import cocotb
@@ -59,21 +59,32 @@ class TestTapTempo(object):
         await self.bounce_up(bounce_num, bounce_per, up=False)
 
     async def reset(self):
-        self.rst <= 1
         self.btn_i <= 0
         await Timer(100, units="ns")
-        self.rst <= 0
         await RisingEdge(self.clk)
 
 @cocotb.test()
 async def debounce_upanddown(dut):
-    td = TestDebounce(dut)
-    td.display_config()
+    td = TestTapTempo(dut)
     td.log.info("Running test!")
     await td.reset()
     td.log.info("System reseted!")
-    for i in range(10):
-        td.log.info("up")
-        await td.bounce_up(10, bounce_per=(10000, "ns"))
-        td.log.info("down")
-        await td.bounce_down(10, bounce_per=(10000, "ns"))
+    await Timer(1000, units="us")
+    td.log.info("up")
+    await td.bounce_up(10, bounce_per=(10, "us"))
+    await Timer(24, units="ms")
+    td.log.info("down")
+    await td.bounce_down(10, bounce_per=(10, "us"))
+    await Timer(300, units="ms")
+    td.log.info("up")
+    await td.bounce_up(10, bounce_per=(10, "us"))
+    await Timer(30, units="ms")
+    td.log.info("down")
+    await td.bounce_down(10, bounce_per=(10, "us"))
+    await Timer(300, units="ms")
+    td.log.info("up")
+    await td.bounce_up(10, bounce_per=(10, "us"))
+    await Timer(30, units="ms")
+
+    td.log.info("Wait stable")
+    await Timer(1000, units="us")
