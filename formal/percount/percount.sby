@@ -1,7 +1,7 @@
 [options]
 #mode cover 
-#mode bmc
-mode prove
+mode bmc
+#mode prove
 depth 150 
 
 [engines]

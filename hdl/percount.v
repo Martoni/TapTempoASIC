@@ -4,13 +4,14 @@
 * Fabien Marteau <mail@fabienm.eu>
 */
 
-`define BPM_PER_MAX 62_600
-
+`define MIN_NS 60_000_000_000
+`define BTN_PER_MAX (`MIN_NS/TP_CYCLE)
+`define BTN_PER_SIZE ($clog2(1 + `BTN_PER_MAX))
 
 module percount #(
     parameter CLK_PER_NS = 40,
+    parameter TP_CYCLE = 5120,
     parameter PULSE_PER_NS = 5120,
-    parameter BPMPER_REG_SIZE = $clog2(`BPM_PER_MAX + 1)
 )(
     /* clock and reset */
     input clk_i,
@@ -20,7 +21,7 @@ module percount #(
     /* input button */
     input btn_i,
     /* output period */
-    output [BPMPER_REG_SIZE:0] btn_per_o,
+    output [(`BTN_PER_SIZE-1):0] btn_per_o,
     output btn_per_valid);
 
 /* Display parameters in simulation */
@@ -28,11 +29,10 @@ initial
 begin
     $display("CLK_PER_NS   : %d", CLK_PER_NS );
     $display("PULSE_PER_NS : %d", PULSE_PER_NS);
-    $display("BPM_PER_MAX  : %d", `BPM_PER_MAX);
-    $display("BPMPER_REG_SIZE  : %d", BPMPER_REG_SIZE);
+    $display("BTN_PER_MAX  : %d", `BTN_PER_MAX);
 end
 
-reg [BPMPER_REG_SIZE:0] counter = 0;
+reg [($clog2(`BTN_PER_MAX+1)-1):0] counter = 0;
 reg counter_valid = 0;
 
 assign btn_per_valid = counter_valid;
@@ -63,7 +63,7 @@ begin
         begin
             counter_valid <= 1'b0;
             /* stop counting if max, count tp_i */
-            if(tp_i && counter < `BPM_PER_MAX)
+            if(tp_i && counter < `BTN_PER_MAX)
                 counter <= counter + 1'b1;
         end
     end
@@ -94,9 +94,9 @@ always @(posedge clk_i) begin
         assert(!$past(btn_rise));
 
     /* When tp_i==1, counter increase if btn_o not rising and counter less
-    * than `BPM_PER_MAX*/
+    * than `BTN_PER_MAX*/
     if(past_valid && !rst_i && $past(tp_i) &&
-        !$past(btn_rise) && counter!=0 && (counter < `BPM_PER_MAX))
+        !$past(btn_rise) && counter!=0 && (counter < `BTN_PER_MAX))
         assert(counter == $past(counter) + 1'b1);
 
     /* when btn_i rose, counter is reset and valid is 1 */
@@ -107,7 +107,7 @@ always @(posedge clk_i) begin
     end
 
     if(past_valid)
-        assert(counter <= `BPM_PER_MAX);
+        assert(counter <= `BTN_PER_MAX);
 
     cover(counter_valid);
 end
