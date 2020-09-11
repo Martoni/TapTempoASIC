@@ -56,12 +56,13 @@ debounce #(
     .btn_o(btn_d));
 
 /* count tap period */
-wire [16:0] btn_per;
+`define BTN_PER_MAX (`MIN_NS/TP_CYCLE)
+`define BTN_PER_SIZE ($clog2(1 + `BTN_PER_MAX))
+wire [(`BTN_PER_SIZE-1):0] btn_per;
 wire btn_per_valid;
 percount #(
     .CLK_PER_NS(CLK_PER_NS),
     .PULSE_PER_NS(TP_CYCLE),
-    .BPMPER_REG_SIZE(16)
 ) inst_percount (
     .clk_i(clk_i),
     .rst_i(rst),
