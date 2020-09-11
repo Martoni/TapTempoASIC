@@ -55,13 +55,12 @@ begin
     begin
         counter <= 0;
     end else begin
-        if(btn_rise) 
-        begin
-            counter <= 0;
+        if(btn_rise) begin
             counter_valid <= 1'b1;
-        end else 
-        begin
+        end else if(counter_valid) begin
+            counter <= 0;
             counter_valid <= 1'b0;
+        end else begin
             /* stop counting if max, count tp_i */
             if(tp_i && counter < `BTN_PER_MAX)
                 counter <= counter + 1'b1;
@@ -90,7 +89,7 @@ always @(posedge clk_i) begin
         assume(!$past(tp_i));
 
     /* btn_rise is one cycle length */
-    if(btn_rise && !rst_i && past_valid)
+    if(btn_rise && !rst_i && past_valid && !$past(rst_i))
         assert(!$past(btn_rise));
 
     /* When tp_i==1, counter increase if btn_o not rising and counter less
@@ -99,12 +98,11 @@ always @(posedge clk_i) begin
         !$past(btn_rise) && counter!=0 && (counter < `BTN_PER_MAX))
         assert(counter == $past(counter) + 1'b1);
 
-    /* when btn_i rose, counter is reset and valid is 1 */
+    /* when btn_i rose,  counter_valid is 1 */
     if(past_valid && !rst_i && $past(btn_rise))
-    begin
-        assert(counter == 1'b0);
         assert(counter_valid == 1'b1);
-    end
+    if(past_valid && !rst_i && $past(counter_valid))
+        assert(counter == 1'b0);
 
     if(past_valid)
         assert(counter <= `BTN_PER_MAX);
