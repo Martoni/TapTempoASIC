@@ -56,6 +56,7 @@ debounce #(
     .btn_o(btn_d));
 
 /* count tap period */
+`define MIN_NS 60_000_000_000
 `define BTN_PER_MAX (`MIN_NS/TP_CYCLE)
 `define BTN_PER_SIZE ($clog2(1 + `BTN_PER_MAX))
 wire [(`BTN_PER_SIZE-1):0] btn_per;
