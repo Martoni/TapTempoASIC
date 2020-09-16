@@ -35,7 +35,7 @@ always@(posedge clk_i or posedge rst_i)
 begin
     if(rst_i)
     begin
-        counter <= (`MAX_COUNT - 1);
+        counter <= 0;
     end else begin
         if (counter < `MAX_COUNT)
         begin
