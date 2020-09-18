@@ -39,7 +39,7 @@ assign btn_per_valid = counter_valid;
 assign btn_per_o = counter;
 
 reg btn_old;
-wire btn_rise = (!btn_old) & btn_i;
+wire btn_fall = btn_old & (!btn_i);
 
 always@(posedge clk_i or posedge rst_i)
 begin
@@ -55,7 +55,7 @@ begin
     begin
         counter <= 0;
     end else begin
-        if(btn_rise) begin
+        if(btn_fall) begin
             counter_valid <= 1'b1;
         end else if(counter_valid) begin
             counter <= 0;
@@ -88,18 +88,18 @@ always @(posedge clk_i) begin
     if(tp_i && !rst_i && past_valid)
         assume(!$past(tp_i));
 
-    /* btn_rise is one cycle length */
-    if(btn_rise && !rst_i && past_valid && !$past(rst_i))
-        assert(!$past(btn_rise));
+    /* btn_fall is one cycle length */
+    if(btn_fall && !rst_i && past_valid && !$past(rst_i))
+        assert(!$past(btn_fall));
 
     /* When tp_i==1, counter increase if btn_o not rising and counter less
     * than `BTN_PER_MAX*/
     if(past_valid && !rst_i && $past(tp_i) &&
-        !$past(btn_rise) && counter!=0 && (counter < `BTN_PER_MAX))
+        !$past(btn_fall) && counter!=0 && (counter < `BTN_PER_MAX))
         assert(counter == $past(counter) + 1'b1);
 
     /* when btn_i rose,  counter_valid is 1 */
-    if(past_valid && !rst_i && $past(btn_rise))
+    if(past_valid && !rst_i && $past(btn_fall))
         assert(counter_valid == 1'b1);
     if(past_valid && !rst_i && $past(counter_valid))
         assert(counter == 1'b0);
