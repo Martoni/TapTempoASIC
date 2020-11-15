@@ -12,4 +12,4 @@ read -formal timepulse.v
 prep -top timepulse
 
 [files]
-../../hdl/timepulse.v
+../../hdl/verilog/timepulse.v

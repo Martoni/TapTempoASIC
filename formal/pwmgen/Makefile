@@ -1,6 +1,6 @@
 SBY = sby
 SBY_CONFIG = pwmgen.sby
-HDL_DIR = ../../hdl
+HDL_DIR = ../../hdl/verilog
 SOURCES =  $(HDL_DIR)/pwmgen.v
 
 pwmgen: $(SBY_CONFIG) $(SOURCES)

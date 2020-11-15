@@ -12,4 +12,4 @@ read -formal pwmgen.v
 prep -top pwmgen
 
 [files]
-../../hdl/pwmgen.v
+../../hdl/verilog/pwmgen.v

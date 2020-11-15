@@ -12,7 +12,7 @@ COMPILE_ARGS += -DCOCOTB_ICARUS
 endif
 
 export COCOTB_REDUCED_LOG_FMT=1
-VERILOG_SOURCES = $(PWD)/../../hdl/debounce.v
+VERILOG_SOURCES = $(PWD)/../../hdl/verilog/debounce.v
 TOPLEVEL=debounce
 MODULE=test_$(TOPLEVEL)
 include $(shell cocotb-config --makefile)/Makefile.sim

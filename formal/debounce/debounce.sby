@@ -12,4 +12,4 @@ read -formal debounce.v
 prep -top debounce
 
 [files]
-../../hdl/debounce.v
+../../hdl/verilog/debounce.v

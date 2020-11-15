@@ -12,4 +12,4 @@ read -formal per2bpm.v
 prep -top per2bpm
 
 [files]
-../../hdl/per2bpm.v
+../../hdl/verilog/per2bpm.v

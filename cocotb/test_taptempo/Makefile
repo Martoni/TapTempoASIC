@@ -7,13 +7,13 @@ endif
 
 export COCOTB_REDUCED_LOG_FMT=1
 VERILOG_SOURCES = $(PWD)/../../synthesis/colorlight/taptemposynth.v
-YOSYS_SOURCES = $(PWD)/../../hdl/debounce.v\
-				  $(PWD)/../../hdl/per2bpm.v\
-				  $(PWD)/../../hdl/percount.v\
-				  $(PWD)/../../hdl/pwmgen.v\
-				  $(PWD)/../../hdl/rstgen.v\
-				  $(PWD)/../../hdl/timepulse.v\
-				  $(PWD)/../../hdl/taptempo.v
+YOSYS_SOURCES =   $(PWD)/../../hdl/verilog/debounce.v\
+				  $(PWD)/../../hdl/verilog/per2bpm.v\
+				  $(PWD)/../../hdl/verilog/percount.v\
+				  $(PWD)/../../hdl/verilog/pwmgen.v\
+				  $(PWD)/../../hdl/verilog/rstgen.v\
+				  $(PWD)/../../hdl/verilog/timepulse.v\
+				  $(PWD)/../../hdl/verilog/taptempo.v
 
 VERILOG_SOURCES = taptemposynth.v
 

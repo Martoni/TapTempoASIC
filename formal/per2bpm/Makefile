@@ -1,6 +1,6 @@
 SBY = sby
 SBY_CONFIG = per2bpm.sby
-HDL_DIR = ../../hdl
+HDL_DIR = ../../hdl/verilog
 SOURCES =  $(HDL_DIR)/per2bpm.v
 
 per2bpm: $(SBY_CONFIG) $(SOURCES)

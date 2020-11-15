@@ -1,6 +1,6 @@
 SBY = sby
 SBY_CONFIG = rstgen.sby
-HDL_DIR = ../../hdl
+HDL_DIR = ../../hdl/verilog
 SOURCES =  $(HDL_DIR)/rstgen.v
 
 rstgen: $(SBY_CONFIG) $(SOURCES)

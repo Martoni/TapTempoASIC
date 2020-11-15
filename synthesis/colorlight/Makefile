@@ -1,13 +1,13 @@
 TARGET=taptempo
 TOP=taptempo
 
-OBJS += ../../hdl/taptempo.v\
-		../../hdl/debounce.v\
-		../../hdl/per2bpm.v\
-		../../hdl/percount.v\
-		../../hdl/pwmgen.v\
-		../../hdl/rstgen.v\
-		../../hdl/timepulse.v
+OBJS += ../../hdl/verilog/taptempo.v\
+		../../hdl/verilog/debounce.v\
+		../../hdl/verilog/per2bpm.v\
+		../../hdl/verilog/percount.v\
+		../../hdl/verilog/pwmgen.v\
+		../../hdl/verilog/rstgen.v\
+		../../hdl/verilog/timepulse.v
 
 TRELLIS=/usr/local/share/trellis
 
