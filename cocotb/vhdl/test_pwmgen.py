@@ -60,7 +60,7 @@ class TestPwmGen(object):
 
     async def reset(self):
         self.rst <= 1
-        self.bpm <= 125
+        self.bpm <= 62
         self._dut.bpm_valid <= 0
         await Timer(100, units="ns")
         self.rst <= 0
@@ -77,4 +77,5 @@ async def debounce_test(dut):
     tpg._dut.bpm_valid <= 1
     await RisingEdge(tpg.clk)
     tpg._dut.bpm_valid <= 0
-    await Timer(10, units="us")
+    for i in range(250):
+        await FallingEdge(tpg._dut.tp_i)

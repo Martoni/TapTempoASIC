@@ -55,10 +55,12 @@ begin
     if rst_i = '1' then
         count <= BPM_MAX;
     elsif rising_edge(clk_i) then
-        if (count = 0) then
-            count <= BPM_MAX;
-        else
-            count <= count - 1;
+        if(tp_i = '1') then
+            if (count = 0) then
+                count <= BPM_MAX;
+            else
+                count <= count - 1;
+            end if ;
         end if ;
     end if;
 end process count_p;
