@@ -96,7 +96,7 @@ class TestDebounce(object):
         await RisingEdge(self.clk)
 
 
-@cocotb.test()
+@cocotb.test(skip=True)
 async def debounce_test(dut):
     td = TestDebounce(dut)
     td.display_config()

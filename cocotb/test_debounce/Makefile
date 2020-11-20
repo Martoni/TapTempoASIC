@@ -1,5 +1,6 @@
 #SIM=verilator
-SIM=icarus
+#SIM=icarus
+SIM=ghdl
 
 ifeq ($(SIM),verilator)
 COMPILE_ARGS=-DCOCOTB_VERILATOR
@@ -12,7 +13,14 @@ COMPILE_ARGS += -DCOCOTB_ICARUS
 endif
 
 export COCOTB_REDUCED_LOG_FMT=1
+
+ifeq ($(SIM),ghdl)
+SIM_ARGS= --wave=dump.ghw
+VHDL_SOURCES = $(PWD)/../../hdl/vhdl/debounce.vhd\
+			   $(PWD)/../../hdl/vhdl/taptempo_pkg.vhd
+else
 VERILOG_SOURCES = $(PWD)/../../hdl/verilog/debounce.v
+endif
 TOPLEVEL=debounce
 MODULE=test_$(TOPLEVEL)
 include $(shell cocotb-config --makefile)/Makefile.sim
