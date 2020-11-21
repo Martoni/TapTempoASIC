@@ -1,7 +1,6 @@
+-- The TapTempo Project
 -- Created on    : 20/11/2020
--- Author        : Fabien Marteau <fabien.marteau@armadeus.com>
--- Copyright (c) ARMadeus systems 2015
-
+-- Author        : Fabien Marteau <mail@fabienm.eu>
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
@@ -26,7 +25,7 @@ end entity;
 
 Architecture debounce_1 of debounce is
 
-    constant MAX_COUNT : natural := ((DEBOUNCE_PER_NS/PULSE_PER_NS)-1);
+    constant MAX_COUNT : natural := ((DEBOUNCE_PER_NS/TP_CYCLE)-1);
     constant MAX_COUNT_SIZE : natural := log2ceil(MAX_COUNT);
     signal counter : natural range 0 to MAX_COUNT;
 
