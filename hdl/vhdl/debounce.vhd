@@ -26,7 +26,7 @@ end entity;
 
 Architecture debounce_1 of debounce is
 
-    constant MAX_COUNT : natural := ((DEBOUNCE_PER_NS/PULSE_PER_NS) - 1); 
+    constant MAX_COUNT : natural := ((DEBOUNCE_PER_NS/PULSE_PER_NS)-1);
     constant MAX_COUNT_SIZE : natural := log2ceil(MAX_COUNT);
     signal counter : natural range 0 to MAX_COUNT;
 
@@ -62,11 +62,11 @@ begin
                     state_reg <= s_cnt_low;
                 end if;
             when s_cnt_high =>
-                if(counter = MAX_COUNT) then
+                if(counter >= MAX_COUNT-1) then
                     state_reg <= s_wait_high;
                 end if;
             when s_cnt_low =>
-                if(counter = MAX_COUNT) then
+                if(counter >= MAX_COUNT-1) then
                     state_reg <= s_wait_low;
                 end if;
         end case;

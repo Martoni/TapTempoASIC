@@ -25,6 +25,9 @@ class TestDebounce(object):
         if cocotb.SIM_NAME == 'Icarus Verilog':
             self.PULSE_PER_NS = int(dut.PULSE_PER_NS)
             self.DEBOUNCE_PER_NS = int(dut.DEBOUNCE_PER_NS)
+        elif cocotb.SIM_NAME == "GHDL":
+            self.PULSE_PER_NS = int(dut.PULSE_PER_NS)
+            self.DEBOUNCE_PER_NS = int(dut.DEBOUNCE_PER_NS)
         else:
             self.PULSE_PER_NS = 5120
             self.DEBOUNCE_PER_NS = 20971520
@@ -48,10 +51,14 @@ class TestDebounce(object):
 
     def display_config(self):
         self.log.info("Configuration :")
+        self.log.info("Simulator : {}".format(cocotb.SIM_NAME))
         self.log.info("Clock period given : {} {}".format(*self.CLK_PER))
         self.log.info("Freq : {}".format(self.freq(self.CLK_PER)))
         self.log.info("PULSE_PER_NS = {} ns".format(self.PULSE_PER_NS))
         self.log.info("DEBOUNCE_PER_NS = {} ns".format(self.DEBOUNCE_PER_NS))
+        self.log.info("MAX_COUNT = {}".format((self.DEBOUNCE_PER_NS/self.PULSE_PER_NS) - 1))
+        #self.log.info("MAX_COUNT = {}".format(self._dut.MAX_COUNT))
+        self.log.info("dut : {}".format(dir(self._dut)))
 
     async def time_pulse(self):
         counter = 0
@@ -96,7 +103,7 @@ class TestDebounce(object):
         await RisingEdge(self.clk)
 
 
-@cocotb.test(skip=True)
+@cocotb.test(skip=False)
 async def debounce_test(dut):
     td = TestDebounce(dut)
     td.display_config()
@@ -106,13 +113,13 @@ async def debounce_test(dut):
     td.log.info("up")
     await td.bounce_up(10, bounce_per=(10000, "ns"))
     td.log.info("wait")
-    await Timer(20, "ms")
+    await Timer(20000, "us")
     td.log.info("down")
     await td.bounce_down(10, bounce_per=(10000, "ns"))
     td.log.info("wait")
-    await Timer(20, "ms")
+    await Timer(20000, "us")
 
-@cocotb.test()
+@cocotb.test(skip=False)
 async def debounce_upanddown(dut):
     td = TestDebounce(dut)
     td.display_config()
@@ -122,6 +129,8 @@ async def debounce_upanddown(dut):
     for i in range(10):
         td.log.info("up")
         await td.bounce_up(10, bounce_per=(10000, "ns"))
+        await Timer(100, "us")
         td.log.info("down")
         await td.bounce_down(10, bounce_per=(10000, "ns"))
+        await Timer(100, "us")
 
