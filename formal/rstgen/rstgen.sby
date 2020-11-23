@@ -12,4 +12,4 @@ read -formal rstgen.v
 prep -top rstgen
 
 [files]
-../../hdl/rstgen.v
+../../hdl/verilog/rstgen.v
