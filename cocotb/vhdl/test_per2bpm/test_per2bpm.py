@@ -70,3 +70,4 @@ async def simple_test(dut):
     tpg.log.info("Therorical result : {}".format((tpg.MIN_NS/tpg.TP_CYCLE)/btn_per))
     tpg.log.info("Result : {}".format(dut.bpm_o.value.integer))
     await RisingEdge(tpg.clk)
+    await Timer(10, units="us")

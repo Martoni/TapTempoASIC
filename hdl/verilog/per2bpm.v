@@ -7,7 +7,7 @@
 
 `define BPM_SIZE ($clog2(BPM_MAX + 1))
 
-`define MIN_NS 60_000_000_000
+`define MIN_NS (60_000_000_000)
 `define BTN_PER_MAX (`MIN_NS/TP_CYCLE)
 `define BTN_PER_SIZE ($clog2(1 + `BTN_PER_MAX))
 `define BTN_PER_MIN ((`MIN_NS/(TP_CYCLE))/BPM_MAX)
