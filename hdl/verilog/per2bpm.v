@@ -30,8 +30,8 @@ module per2bpm #(
     output bpm_valid
 );
 
-`define DIVIDENTWITH ($clog2(1 + `MIN_NS/(TP_CYCLE)))
-`define REGWIDTH (`BTN_PER_SIZE + `DIVIDENTWITH)
+`define DIVIDENTWIDTH ($clog2(1 + `MIN_NS/(TP_CYCLE)))
+`define REGWIDTH (`BTN_PER_SIZE + `DIVIDENTWIDTH)
 
 reg [(`REGWIDTH-1):0] divisor;
 reg [(`REGWIDTH-1):0] remainder;
@@ -77,25 +77,25 @@ begin
         divisor <= 0;
         remainder <= 0;
         quotient <= 0;
-        ctrlcnt <= `REGWIDTH;
+        ctrlcnt <= `DIVIDENTWIDTH;
     end else begin
         if(state_reg == s_init)
         begin
             if(btn_per_i < `BTN_PER_MIN)
-                divisor <= {`BTN_PER_MIN, (`DIVIDENTWITH)'h0};
+                divisor <= {`BTN_PER_MIN, (`DIVIDENTWIDTH)'h0};
             else
-                divisor <= {btn_per_i, (`DIVIDENTWITH)'h0};
+                divisor <= {btn_per_i, (`DIVIDENTWIDTH)'h0};
             remainder <= `MIN_NS/TP_CYCLE;
             quotient <= 0;
-            ctrlcnt <= `DIVIDENTWITH;
+            ctrlcnt <= `DIVIDENTWIDTH;
         end else if(state_reg == s_compute)
         begin
             if(divisor <= remainder)
             begin
                 remainder <= remainder - divisor;
-                quotient <= {quotient[(`DIVIDENTWITH-2):0], 1'b1};
+                quotient <= {quotient[(`DIVIDENTWIDTH-2):0], 1'b1};
             end else begin
-                quotient <= {quotient[(`DIVIDENTWITH-2):0], 1'b0};
+                quotient <= {quotient[(`DIVIDENTWIDTH-2):0], 1'b0};
             end
             divisor <= {1'b0, divisor[(`REGWIDTH-1):1]};
             ctrlcnt <= ctrlcnt - 1'b1;

@@ -22,13 +22,13 @@ Entity per2bpm is
 end entity;
 
 Architecture per2bpm_1 of per2bpm is
-    constant DIVIDENTWITH : natural := log2ceil(1 + (MIN_US/TP_CYCLE)*1000);
-    constant REGWIDTH : natural := BTN_PER_SIZE + DIVIDENTWITH;
+    constant DIVIDENTWIDTH : natural := log2ceil(1 + (MIN_US/TP_CYCLE)*1000);
+    constant REGWIDTH : natural := BTN_PER_SIZE + DIVIDENTWIDTH;
 
     signal divisor : std_logic_vector(REGWIDTH-1 downto 0);
     signal remainder : std_logic_vector(REGWIDTH-1 downto 0);
     signal quotient : std_logic_vector(REGWIDTH-1 downto 0);
-    signal ctrlcnt : natural range 0 to REGWIDTH;
+    signal ctrlcnt : natural range 0 to DIVIDENTWIDTH + 1;
 
     type t_state is (s_init, s_compute, s_result);
     signal state_reg : t_state;
@@ -57,18 +57,18 @@ begin
             divisor <= (others => '0');
             remainder <= (others => '0');
             quotient <= (others => '0');
-            ctrlcnt <= REGWIDTH;
+            ctrlcnt <= DIVIDENTWIDTH + 1;
         elsif rising_edge(clk_i) then
             if(state_reg = s_init) then
                 if(to_integer(unsigned(btn_per_i)) < BTN_PER_MIN) then
                     divisor <= std_logic_vector(
-                        to_unsigned(BTN_PER_MIN, BTN_PER_SIZE)) & ZEROS(DIVIDENTWITH-1 downto 0);
+                        to_unsigned(BTN_PER_MIN, BTN_PER_SIZE)) & ZEROS(DIVIDENTWIDTH-1 downto 0);
                 else
-                    divisor <= btn_per_i & ZEROS(DIVIDENTWITH-1 downto 0);
+                    divisor <= btn_per_i & ZEROS(DIVIDENTWIDTH-1 downto 0);
                 end if;
                 remainder <= std_logic_vector(to_unsigned((MIN_US/TP_CYCLE)*1000, REGWIDTH));
                 quotient <= (others => '0');
-                ctrlcnt <= DIVIDENTWITH;
+                ctrlcnt <= DIVIDENTWIDTH + 1;
             elsif(state_reg = s_compute) then
                 if(divisor <= remainder) then
                     remainder <= std_logic_vector(
