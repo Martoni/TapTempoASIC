@@ -1,9 +1,11 @@
 #SIM=verilator
-SIM=icarus
+#SIM=icarus
+SIM=ghdl
+
+TOPLEVEL=taptempo
 
 ifeq ($(SIM),icarus)
 COMPILE_ARGS += -DCOCOTB_ICARUS
-endif
 
 export COCOTB_REDUCED_LOG_FMT=1
 VERILOG_SOURCES = $(PWD)/../../synthesis/colorlight/taptemposynth.v
@@ -17,7 +19,20 @@ YOSYS_SOURCES =   $(PWD)/../../hdl/verilog/debounce.v\
 
 VERILOG_SOURCES = taptemposynth.v
 
-TOPLEVEL=taptempo
+endif
+
+ifeq ($(SIM),ghdl)
+SIM_ARGS= --fst=$(TOPLEVEL).fst
+VHDL_SOURCES = $(PWD)/../../hdl/vhdl/$(TOPLEVEL).vhd\
+			   $(PWD)/../../hdl/vhdl/debounce.vhd\
+			   $(PWD)/../../hdl/vhdl/per2bpm.vhd\
+			   $(PWD)/../../hdl/vhdl/percount.vhd\
+			   $(PWD)/../../hdl/vhdl/pwmgen.vhd\
+			   $(PWD)/../../hdl/vhdl/rstgen.vhd\
+			   $(PWD)/../../hdl/vhdl/timepulse.vhd\
+			   $(PWD)/../../hdl/vhdl/taptempo_pkg.vhd
+endif
+
 MODULE=test_$(TOPLEVEL)
 include $(shell cocotb-config --makefile)/Makefile.sim
 
