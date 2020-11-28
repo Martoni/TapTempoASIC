@@ -47,6 +47,7 @@ begin
     begin
         if rst_i = '1' then
             counter <= 0;
+            counter_valid <= '0';
         elsif rising_edge(clk_i) then
             if btn_fall = '1' then
                 counter_valid <= '1';

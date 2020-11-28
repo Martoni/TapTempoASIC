@@ -28,8 +28,10 @@ class TestPerCount(object):
         self.rst = dut.rst_i
         self.clk = dut.clk_i
         self.tp = dut.tp_i
+        self.btn_i = dut.btn_i
         self._clock_thread = cocotb.fork(
                 Clock(self.clk, *self.CLK_PER).start())
+        self._dsptime = cocotb.fork(self.display_time())
 
     @classmethod
     def freq(cls, clkper):
@@ -44,6 +46,13 @@ class TestPerCount(object):
         self.log.info("Configuration :")
         self.log.info("Clock period given : {} {}".format(*self.CLK_PER))
         self.log.info("Freq : {}".format(self.freq(self.CLK_PER)))
+
+    async def display_time(self, tstep=(100, "us")):
+            passtime = 0
+            while True:
+                await Timer(tstep[0], units=tstep[1])
+                passtime += 1
+                self.log.info("{} {}".format(passtime*tstep[0], tstep[1]))
 
     async def time_pulse(self):
         counter = 0
@@ -68,9 +77,31 @@ class TestPerCount(object):
 
 
 @cocotb.test()
-async def simple_test(dut):
+async def double_push_test(dut):
     tpc = TestPerCount(dut)
     tpc.display_config()
     tpc.log.info("Running test!")
     await tpc.reset()
+    await Timer(1, units="us")
+    # raise button
+    await Timer(1)
+    tpc.btn_i <= 1;
+    tpc.log.info("raise button")
     await Timer(1, units="ms")
+    # fall button
+    await Timer(1)
+    tpc.btn_i <= 0;
+    tpc.log.info("fall button")
+    await Timer(1, units="ms")
+    # raise button
+    await Timer(1)
+    tpc.btn_i <= 1;
+    tpc.log.info("raise button")
+    await Timer(1, units="ms")
+    # fall button
+    await Timer(1)
+    tpc.btn_i <= 0;
+    tpc.log.info("fall button")
+    await Timer(1, units="ms")
+
+
