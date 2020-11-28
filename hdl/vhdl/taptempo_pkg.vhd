@@ -13,6 +13,7 @@ package taptempo_pkg is
     constant BTN_PER_SIZE : natural;
     constant BTN_PER_MIN : natural;
     constant MIN_US : natural;
+    constant MAX_COUNT : natural;
 
     constant ZEROS : std_logic_vector(31 downto 0);
 
@@ -33,6 +34,7 @@ package body taptempo_pkg is
     constant BTN_PER_MAX : natural := 1000*(MIN_US/TP_CYCLE);
     constant BTN_PER_SIZE : natural := log2ceil(BTN_PER_MAX + 1);
     constant BTN_PER_MIN : natural := 1000*(MIN_US/TP_CYCLE)/BPM_MAX;
+    constant MAX_COUNT : natural := TP_CYCLE/CLK_PER_NS;
 
     constant ZEROS : std_logic_vector(31 downto 0) := x"00000000";
 
