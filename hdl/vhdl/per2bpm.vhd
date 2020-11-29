@@ -27,6 +27,7 @@ Architecture per2bpm_1 of per2bpm is
 
     signal divisor : std_logic_vector(REGWIDTH-1 downto 0);
     signal remainder : std_logic_vector(REGWIDTH-1 downto 0);
+
     signal quotient : std_logic_vector(REGWIDTH-1 downto 0);
     signal ctrlcnt : natural range 0 to DIVIDENTWIDTH + 1;
 
@@ -34,11 +35,11 @@ Architecture per2bpm_1 of per2bpm is
     signal state_reg : t_state;
 
 begin
-   
+
     div_sm : process(clk_i, rst_i)
     begin
         case state_reg is
-            when s_init => 
+            when s_init =>
                 if (btn_per_valid = '1') then
                     state_reg <= s_compute;
                 end if;
@@ -70,7 +71,7 @@ begin
                 quotient <= (others => '0');
                 ctrlcnt <= DIVIDENTWIDTH + 1;
             elsif(state_reg = s_compute) then
-                if(divisor <= remainder) then
+                if(unsigned(divisor) <= unsigned(remainder)) then
                     remainder <= std_logic_vector(
                         to_unsigned(
                             (to_integer(unsigned(remainder)) - to_integer(unsigned(divisor))),
