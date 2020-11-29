@@ -9,7 +9,6 @@ use work.taptempo_pkg.all;
 
 Entity debounce is
     generic(
-        PULSE_PER_NS : natural := 5120;
         DEBOUNCE_PER_NS: natural := 20_971_520);
     port (
         -- clock and reset

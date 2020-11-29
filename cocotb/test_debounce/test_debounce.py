@@ -25,9 +25,6 @@ class TestDebounce(object):
         if cocotb.SIM_NAME == 'Icarus Verilog':
             self.PULSE_PER_NS = int(dut.PULSE_PER_NS)
             self.DEBOUNCE_PER_NS = int(dut.DEBOUNCE_PER_NS)
-        elif cocotb.SIM_NAME == "GHDL":
-            self.PULSE_PER_NS = int(dut.PULSE_PER_NS)
-            self.DEBOUNCE_PER_NS = int(dut.DEBOUNCE_PER_NS)
         else:
             self.PULSE_PER_NS = 5120
             self.DEBOUNCE_PER_NS = 20971520
