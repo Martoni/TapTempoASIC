@@ -26,6 +26,7 @@ class TestTapTempo(object):
         self.btn_i = dut.btn_i
         self._clock_thread = cocotb.fork(
                 Clock(self.clk, *self.CLK_PER).start())
+        self._dsptime = cocotb.fork(self.display_time())
 
     @classmethod
     def freq(cls, clkper):
@@ -35,6 +36,13 @@ class TestTapTempo(object):
                  "ms": " Hz",
                  "s" : "mHz"}
         return "{} {}".format(1000/float(clkper[0]), units[clkper[1]])
+
+    async def display_time(self, tstep=(1, "ms")):
+            passtime = 0
+            while True:
+                await Timer(tstep[0], units=tstep[1])
+                passtime += 1
+                self.log.info("{} {}".format(passtime*tstep[0], tstep[1]))
 
     async def bounce_up(self, bounce_num=10, bounce_per=(500, "us"), up=True):
         bounce_sum = bounce_num*(1+bounce_num)/2
@@ -70,18 +78,21 @@ async def debounce_upanddown(dut):
     await td.reset()
     td.log.info("System reseted!")
     await Timer(1000, units="us")
+
     td.log.info("up")
     await td.bounce_up(10, bounce_per=(10000, "ns"))
     await Timer(24, units="ms")
     td.log.info("down")
     await td.bounce_down(10, bounce_per=(10000, "ns"))
-    await Timer(300, units="ms")
+    await Timer(100, units="ms")
+
     td.log.info("up")
     await td.bounce_up(10, bounce_per=(10000, "ns"))
     await Timer(30, units="ms")
     td.log.info("down")
     await td.bounce_down(10, bounce_per=(10000, "ns"))
-    await Timer(800, units="ms")
+    await Timer(100, units="ms")
+
     td.log.info("up")
     await td.bounce_up(10, bounce_per=(10000, "ns"))
     await Timer(30, units="ms")
