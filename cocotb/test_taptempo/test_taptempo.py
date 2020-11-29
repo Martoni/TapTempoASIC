@@ -84,14 +84,14 @@ async def debounce_upanddown(dut):
     await Timer(24, units="ms")
     td.log.info("down")
     await td.bounce_down(10, bounce_per=(10000, "ns"))
-    await Timer(100, units="ms")
+    await Timer(300, units="ms")
 
     td.log.info("up")
     await td.bounce_up(10, bounce_per=(10000, "ns"))
     await Timer(30, units="ms")
     td.log.info("down")
     await td.bounce_down(10, bounce_per=(10000, "ns"))
-    await Timer(100, units="ms")
+    await Timer(800, units="ms")
 
     td.log.info("up")
     await td.bounce_up(10, bounce_per=(10000, "ns"))
