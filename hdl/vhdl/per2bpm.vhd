@@ -49,6 +49,8 @@ begin
                 end if;
             when s_result =>
                 state_reg <= s_init;
+            when others =>
+                state_reg <= s_init;
         end case;
     end process div_sm;
 

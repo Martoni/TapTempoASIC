@@ -18,7 +18,7 @@ Entity timepulse is
 end entity timepulse;
 
 architecture timepulse_1 of timepulse is
-    signal counter : natural range 0 to MAX_COUNT;
+    signal counter : natural range 0 to MAX_COUNT + 1;
 begin
 
     tp_o <= '1' when (counter = 0) else '0';
