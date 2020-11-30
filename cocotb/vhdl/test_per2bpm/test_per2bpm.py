@@ -62,8 +62,9 @@ async def simple_test(dut):
     await Timer(1, units="us")
     await RisingEdge(tpg.clk)
     #1
-    #btn_per = int(tpg.MIN_NS/tpg.TP_CYCLE)
-    btn_per = 46875
+    btn_per = int(tpg.MIN_NS/(11*tpg.TP_CYCLE))
+    #btn_per = 46875
+    #btn_per = 46875
     dut.btn_per_i = btn_per
     dut.btn_per_valid = 1
     await RisingEdge(tpg.clk)
@@ -71,7 +72,7 @@ async def simple_test(dut):
     await RisingEdge(dut.bpm_valid)
     await RisingEdge(tpg.clk)
     result = dut.bpm_o.value.integer
-    result_theory = (tpg.MIN_NS/tpg.TP_CYCLE)/btn_per
+    result_theory = int((tpg.MIN_NS/tpg.TP_CYCLE)/btn_per)
     tpg.log.info("Therorical result : {}".format(result_theory))
     tpg.log.info("Result : {}".format(result))
     if result != result_theory:

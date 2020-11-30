@@ -17,7 +17,8 @@ VERILOG_SOURCES = $(TOPLEVEL)_cocotb.v
 endif
 
 ifeq ($(SIM),ghdl)
-SIM_ARGS= --fst=per2bpm.fst
+#SIM_ARGS= --vcd=per2bpmghdl.vcd
+SIM_ARGS= --fst=per2bpmghdl.fst
 VHDL_SOURCES = $(PWD)/../../../hdl/vhdl/per2bpm.vhd\
 			   $(PWD)/../../../hdl/vhdl/taptempo_pkg.vhd
 endif
@@ -40,3 +41,5 @@ $(TOPLEVEL)_cocotb.v: $(TOPLEVEL).v
 mrproper:
 	rm -f $(TOPLEVEL).v
 	rm -f $(TOPLEVEL)_cocotb.v
+	rm -f sim_build
+	rm results.xml

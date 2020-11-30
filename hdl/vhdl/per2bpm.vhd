@@ -36,55 +36,46 @@ Architecture per2bpm_1 of per2bpm is
 
 begin
 
-    div_sm : process(clk_i, rst_i)
-    begin
-        case state_reg is
-            when s_init =>
-                if (btn_per_valid = '1') then
-                    state_reg <= s_compute;
-                end if;
-            when s_compute =>
-                if (ctrlcnt = 0) then
-                    state_reg <= s_result;
-                end if;
-            when s_result =>
-                state_reg <= s_init;
-            when others =>
-                state_reg <= s_init;
-        end case;
-    end process div_sm;
-
     div_process : process(clk_i, rst_i)
     begin
         if rst_i = '1' then
             divisor <= (others => '0');
             remainder <= (others => '0');
             quotient <= (others => '0');
-            ctrlcnt <= DIVIDENTWIDTH + 1;
+            ctrlcnt <= DIVIDENTWIDTH;
         elsif rising_edge(clk_i) then
-            if(state_reg = s_init) then
-                if(to_integer(unsigned(btn_per_i)) < BTN_PER_MIN) then
-                    divisor <= std_logic_vector(
-                        to_unsigned(BTN_PER_MIN, BTN_PER_SIZE)) & ZEROS(DIVIDENTWIDTH-1 downto 0);
-                else
-                    divisor <= btn_per_i & ZEROS(DIVIDENTWIDTH-1 downto 0);
-                end if;
-                remainder <= std_logic_vector(to_unsigned((MIN_US/TP_CYCLE)*1000, REGWIDTH));
-                quotient <= (others => '0');
-                ctrlcnt <= DIVIDENTWIDTH + 1;
-            elsif(state_reg = s_compute) then
-                if(unsigned(divisor) <= unsigned(remainder)) then
-                    remainder <= std_logic_vector(
-                        to_unsigned(
-                            (to_integer(unsigned(remainder)) - to_integer(unsigned(divisor))),
-                            REGWIDTH));
-                    quotient <= quotient(REGWIDTH-2 downto 0) & "1";
-                else
-                    quotient <= quotient(REGWIDTH-2 downto 0) & "0";
-                end if;
-                divisor <= "0" & divisor(REGWIDTH-1 downto 1);
-                ctrlcnt <= ctrlcnt - 1;
-            end if;
+            case state_reg is 
+                when s_init =>
+                    if(to_integer(unsigned(btn_per_i)) < BTN_PER_MIN) then
+                        divisor <= std_logic_vector(
+                            to_unsigned(BTN_PER_MIN, BTN_PER_SIZE)) & ZEROS(DIVIDENTWIDTH-1 downto 0);
+                    else
+                        divisor <= btn_per_i & ZEROS(DIVIDENTWIDTH-1 downto 0);
+                    end if;
+                    remainder <= std_logic_vector(to_unsigned((MIN_US/TP_CYCLE)*1000, REGWIDTH));
+                    quotient <= (others => '0');
+                    ctrlcnt <= DIVIDENTWIDTH;
+                    if (btn_per_valid = '1') then
+                        state_reg <= s_compute;
+                    end if;
+                when s_compute =>
+                    if(unsigned(divisor) <= unsigned(remainder)) then
+                        remainder <= std_logic_vector(unsigned(remainder) - unsigned(divisor));
+                        quotient <= quotient(REGWIDTH-2 downto 0) & "1";
+                    else
+                        quotient <= quotient(REGWIDTH-2 downto 0) & "0";
+                    end if;
+                    divisor <= "0" & divisor(REGWIDTH-1 downto 1);
+                    if (ctrlcnt = 0) then
+                        state_reg <= s_result;
+                    else
+                        ctrlcnt <= ctrlcnt - 1;
+                    end if;
+                --when s_result =>
+                when others =>
+                    state_reg <= s_init;
+
+            end case;
         end if;
     end process div_process;
 
