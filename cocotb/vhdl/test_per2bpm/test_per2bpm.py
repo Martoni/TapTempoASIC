@@ -9,6 +9,7 @@
 
 import cocotb
 import logging
+import math
 from cocotb.clock import Clock
 from cocotb.triggers import Timer
 from cocotb.result import TestError
@@ -62,7 +63,10 @@ async def simple_test(dut):
     await Timer(1, units="us")
     await RisingEdge(tpg.clk)
     #1
-    btn_per = int(tpg.MIN_NS/(11*tpg.TP_CYCLE))
+    btn_per_float = tpg.MIN_NS/(40*tpg.TP_CYCLE) +1
+    btn_per = math.floor(btn_per_float)
+    tpg.log.info("btn_per (float) : {}".format(btn_per_float))
+    tpg.log.info("btn_per (int) : {}".format(btn_per))
     #btn_per = 46875
     #btn_per = 46875
     dut.btn_per_i = btn_per
@@ -72,8 +76,10 @@ async def simple_test(dut):
     await RisingEdge(dut.bpm_valid)
     await RisingEdge(tpg.clk)
     result = dut.bpm_o.value.integer
-    result_theory = int((tpg.MIN_NS/tpg.TP_CYCLE)/btn_per)
-    tpg.log.info("Therorical result : {}".format(result_theory))
+    result_theory_float = (tpg.MIN_NS/tpg.TP_CYCLE)/btn_per
+    result_theory = math.floor(result_theory_float)
+    tpg.log.info("Therorical result (float): {}".format(result_theory_float))
+    tpg.log.info("Therorical result (int): {}".format(result_theory))
     tpg.log.info("Result : {}".format(result))
     if result != result_theory:
         msg = "Wrong value calculation {}, should be {}".format(result, result_theory)
