@@ -20,7 +20,7 @@ entity pwmgen is
         -- timepulse
         tp_i : in std_logic;
         -- input value
-        bpm_i : in std_logic_vector(log2ceil(BPM_MAX+1)-1 downto 0);
+        bpm_i : in std_logic_vector(BPM_SIZE-1 downto 0);
         bpm_valid : in std_logic;
         -- output
         pwm_o : out std_logic);
@@ -29,22 +29,21 @@ end entity;
 architecture pwmgen_1 of pwmgen is
     signal count : natural range 0 to BPM_MAX;
     signal pwmthreshold : natural range 0 to BPM_MAX;
-    constant REG_SIZE : natural := log2ceil(BPM_MAX+1);
-    signal bpm_reg : std_logic_vector(REG_SIZE-1 downto 0);
+    signal bpm_reg : natural range 0 to BPM_MAX;
 begin
 
 -- Latching bpm_i on bpm_valid
 bpm_latch_p : process(clk_i, rst_i)
 begin
     if rst_i = '1' then
-        bpm_reg <= (others => '0');
+        bpm_reg <= 0;
         pwmthreshold <= 0;
     elsif rising_edge(clk_i) then
         if bpm_valid = '1' then
-            bpm_reg <= bpm_i;
+            bpm_reg <= to_integer(unsigned(bpm_i));
         end if;
         if(count = BPM_MAX) then
-            pwmthreshold <= to_integer(unsigned(bpm_reg));
+            pwmthreshold <= bpm_reg;
         end if;
     end if;
 end process bpm_latch_p;
@@ -66,6 +65,6 @@ begin
 end process count_p;
 
 -- pwm output
-pwm_o <= '1' when (count <= pwmthreshold) else '0';
+pwm_o <= '1' when (count < pwmthreshold) else '0';
 
 end architecture pwmgen_1;
