@@ -43,6 +43,7 @@ begin
             remainder <= (others => '0');
             quotient <= (others => '0');
             ctrlcnt <= DIVIDENTWIDTH;
+            state_reg <= s_init;
         elsif rising_edge(clk_i) then
             case state_reg is 
                 when s_init =>
@@ -66,12 +67,15 @@ begin
                         quotient <= quotient(REGWIDTH-2 downto 0) & "0";
                     end if;
                     divisor <= "0" & divisor(REGWIDTH-1 downto 1);
+
                     if (ctrlcnt = 0) then
                         state_reg <= s_result;
                     else
                         ctrlcnt <= ctrlcnt - 1;
+                        state_reg <= s_compute;
                     end if;
-                --when s_result =>
+                when s_result =>
+                    state_reg <= s_init;
                 when others =>
                     state_reg <= s_init;
 
@@ -81,5 +85,4 @@ begin
 
 bpm_o <= quotient(BPM_SIZE-1 downto 0);
 bpm_valid <= '1' when state_reg = s_result else '0';
-
 end Architecture per2bpm_1;
