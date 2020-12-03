@@ -30,6 +30,7 @@ class TestPwmGen(object):
         self._clock_thread = cocotb.fork(
                 Clock(self.clk, *self.CLK_PER).start())
         self._tp_thread = cocotb.fork(self.time_pulse())
+        self._dsptime = cocotb.fork(self.display_time(tstep=(100, "us")))
 
     @classmethod
     def freq(cls, clkper):
@@ -44,6 +45,14 @@ class TestPwmGen(object):
         self.log.info("Configuration :")
         self.log.info("Clock period given : {} {}".format(*self.CLK_PER))
         self.log.info("Freq : {}".format(self.freq(self.CLK_PER)))
+
+    async def display_time(self, tstep=(1, "ms")):
+            passtime = 0
+            while True:
+                await Timer(tstep[0], units=tstep[1])
+                passtime += 1
+                self.log.info("{} {}".format(passtime*tstep[0], tstep[1]))
+
 
     async def time_pulse(self):
         counter = 0
@@ -79,3 +88,11 @@ async def debounce_test(dut):
     tpg._dut.bpm_valid <= 0
     for i in range(250):
         await FallingEdge(tpg._dut.tp_i)
+    await RisingEdge(tpg.clk)
+    tpg.bpm <= 128
+    tpg._dut.bpm_valid <= 1
+    await RisingEdge(tpg.clk)
+    tpg._dut.bpm_valid <= 0
+    for i in range(2*250):
+        await FallingEdge(tpg._dut.tp_i)
+
