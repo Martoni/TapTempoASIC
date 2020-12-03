@@ -78,7 +78,7 @@ architecture taptempo_1 of taptempo is
     end component percount;
 
     -- convert period in bpm
-    signal bpm : std_logic_vector(BPM_SIZE - 1 downto 0); 
+    signal bpm : std_logic_vector(BPM_SIZE - 1 downto 0);
     signal bpm_valid : std_logic;
     component per2bpm is
         port(
@@ -104,11 +104,12 @@ architecture taptempo_1 of taptempo is
         -- timepulse
         tp_i : in std_logic;
         -- input value
-        bpm_i : in std_logic_vector(log2ceil(BPM_MAX+1)-1 downto 0);
+        bpm_i : in std_logic_vector(BPM_SIZE-1 downto 0);
         bpm_valid : in std_logic;
         -- output
         pwm_o : out std_logic);
     end component pwmgen;
+
 
 begin
 
@@ -146,6 +147,7 @@ begin
         btn_i => btn_s,
         btn_o => btn_d);
 
+
     -- count tap period
     percount_connect : percount
     port map (
@@ -165,6 +167,7 @@ begin
         btn_per_valid => btn_per_valid,
         bpm_o => bpm,
         bpm_valid => bpm_valid);
+
 
     -- generate pwm
     pwmgen_connect : pwmgen
