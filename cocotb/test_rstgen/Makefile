@@ -1,9 +1,9 @@
-#SIM=ghdl
+SIM=ghdl
 #SIM=verilator
 #SIM=icarus
 
-VSOURCE=$(PWD)/../../../hdl/verilog/per2bpm.v
-
+TOPLEVEL=rstgen
+VSOURCE=$(PWD)/../../hdl/verilog/$(TOPLEVEL).v
 
 ifeq ($(SIM),verilator)
 COMPILE_ARGS=-DCOCOTB_VERILATOR
@@ -17,14 +17,12 @@ VERILOG_SOURCES = $(TOPLEVEL)_cocotb.v
 endif
 
 ifeq ($(SIM),ghdl)
-#SIM_ARGS= --vcd=per2bpmghdl.vcd
-SIM_ARGS= --fst=per2bpmghdl.fst
-VHDL_SOURCES = $(PWD)/../../../hdl/vhdl/per2bpm.vhd\
-			   $(PWD)/../../../hdl/vhdl/taptempo_pkg.vhd
+SIM_ARGS= --fst=$(TOPLEVEL).fst
+VHDL_SOURCES = $(PWD)/../../hdl/vhdl/$(TOPLEVEL).vhd\
+			   $(PWD)/../../hdl/vhdl/taptempo_pkg.vhd
 endif
 
 export COCOTB_REDUCED_LOG_FMT=1
-TOPLEVEL=per2bpm
 MODULE=test_$(TOPLEVEL)
 include $(shell cocotb-config --makefile)/Makefile.sim
 
@@ -41,5 +39,3 @@ $(TOPLEVEL)_cocotb.v: $(TOPLEVEL).v
 mrproper:
 	rm -f $(TOPLEVEL).v
 	rm -f $(TOPLEVEL)_cocotb.v
-	rm -f sim_build
-	rm results.xml

@@ -3,7 +3,7 @@ SIM=ghdl
 #SIM=icarus
 
 TOPLEVEL=timepulse
-VSOURCE=$(PWD)/../../../hdl/verilog/$(TOPLEVEL).v
+VSOURCE=$(PWD)/../../hdl/verilog/$(TOPLEVEL).v
 
 ifeq ($(SIM),verilator)
 COMPILE_ARGS=-DCOCOTB_VERILATOR
@@ -18,8 +18,8 @@ endif
 
 ifeq ($(SIM),ghdl)
 SIM_ARGS= --fst=$(TOPLEVEL).fst
-VHDL_SOURCES = $(PWD)/../../../hdl/vhdl/$(TOPLEVEL).vhd\
-			   $(PWD)/../../../hdl/vhdl/taptempo_pkg.vhd
+VHDL_SOURCES = $(PWD)/../../hdl/vhdl/$(TOPLEVEL).vhd\
+			   $(PWD)/../../hdl/vhdl/taptempo_pkg.vhd
 endif
 
 export COCOTB_REDUCED_LOG_FMT=1
