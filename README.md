@@ -1,6 +1,8 @@
-# TapTempoASIC The TapTempoASIC project aim to construct a full component from
+# The TapTempo project.
+
+TapTempoASIC The TapTempoASIC project aim to construct a full component from
 scratch in Verilog. TapTempo is a fun subject proposed in several programming
-languages on [LinuxFR](https://linuxfr.org/tags/taptempo/public) french
+languages on [LinuxFR](https://linuxfr.org/wiki/taptempo) french
 website. But all languages proposed are for programming, what about hardware
 constructs ?
 
@@ -22,7 +24,7 @@ SIM=icarus make
 It's possible to prove modules with yosys-smtbmc in formal/ directory. To
 launch prove go to directory with the module name required and type make.
 
-## VHDL
+## VHDL
 
 All TapTempo synthesizable VHDL code is stored in hdl/vhdl/ directory. To
 synthesize it for ECP5 colorlight board go to synthesize/colorlight_vhdl/
