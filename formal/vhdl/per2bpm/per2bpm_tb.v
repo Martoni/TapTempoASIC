@@ -9,7 +9,17 @@ module per2bpm_tb;
         .bpm_valid(bpm_valid));
 
 
-  assert property (
-    @(posedge clk_i) $rose(rst_i) |-> DUT.divisor == 0);
+    reg past_valid;
+    
+    initial begin
+        past_valid <= 1'b0;
+        assume(rst_i);
+    end
+
+    always @(posedge clk_i)
+    begin
+        if(rst_i)
+            assert(bpm_o == 1'b0);
+    end
 
 endmodule

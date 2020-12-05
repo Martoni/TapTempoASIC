@@ -3,13 +3,14 @@ mode bmc
 depth 12
 
 [engines]
-smtbmc boolector
+smtbmc
 
 [script]
-verific -vhdl per2bpm.vhd
+ghdl --std=08 per2bpm.vhd taptempo_pkg.vhd -e per2bpm
 read -formal per2bpm_tb.v
-prep -top testbench
+prep -top per2bpm_tb
 
 [files]
 ../../../hdl/vhdl/per2bpm.vhd
+../../../hdl/vhdl/taptempo_pkg.vhd
 per2bpm_tb.v
