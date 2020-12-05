@@ -1,0 +1,15 @@
+[options]
+mode bmc
+depth 12
+
+[engines]
+smtbmc boolector
+
+[script]
+verific -vhdl per2bpm.vhd
+read -formal per2bpm_tb.v
+prep -top testbench
+
+[files]
+../../../hdl/vhdl/per2bpm.vhd
+per2bpm_tb.v
