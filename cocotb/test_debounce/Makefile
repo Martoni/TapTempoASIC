@@ -15,6 +15,7 @@ endif
 export COCOTB_REDUCED_LOG_FMT=1
 
 ifeq ($(SIM),ghdl)
+COMPILE_ARGS= --std=08
 SIM_ARGS= --wave=dump.ghw
 VHDL_SOURCES = $(PWD)/../../hdl/vhdl/debounce.vhd\
 			   $(PWD)/../../hdl/vhdl/taptempo_pkg.vhd

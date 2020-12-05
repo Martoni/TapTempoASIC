@@ -17,6 +17,7 @@ VERILOG_SOURCES = $(TOPLEVEL)_cocotb.v
 endif
 
 ifeq ($(SIM),ghdl)
+COMPILE_ARGS= --std=08
 #SIM_ARGS= --vcd=per2bpmghdl.vcd
 SIM_ARGS= --fst=per2bpmghdl.fst
 VHDL_SOURCES = $(PWD)/../../hdl/vhdl/per2bpm.vhd\

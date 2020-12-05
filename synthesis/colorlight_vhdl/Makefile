@@ -15,7 +15,7 @@ TRELLIS=/usr/local/share/trellis
 all: ${TARGET}.bit
 
 $(TARGET).json: $(OBJS)
-	yosys -m ghdl -p 'ghdl $(OBJS) -e $(TOP); synth_ecp5 -json $(TOP).json; show'
+	yosys -m ghdl -p 'ghdl --std=08 $(OBJS) -e $(TOP); synth_ecp5 -json $(TOP).json; show'
 
 $(TARGET)_out.config: $(TARGET).json
 	nextpnr-ecp5 --25k --package CABGA256 --speed 6\
