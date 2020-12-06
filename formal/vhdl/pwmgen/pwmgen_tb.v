@@ -1,9 +1,12 @@
 module pwmgen_tb;
 
-    reg clk_i;
-    reg rst_i;
-    wire [7:0] bpm_i;
-    wire bpm_valid;
+    reg clk_i = 0;
+    reg rst_i = 0;
+    reg tp_i = 0;
+    reg [7:0] bpm_i;
+    reg [7:0] bpm_reg;
+    reg pwm_o;
+    reg bpm_valid = 0;
 
     localparam CLK_PER_NS = 40; // 25Mhz clock
     localparam TP_CYCLE = 5120; // Number of cycles per timepulse
@@ -26,52 +29,26 @@ module pwmgen_tb;
     initial begin
         past_valid <= 1'b0;
         assume(rst_i);
+        bpm_i <= 0;
     end
 
-    // manage formal registers
     always @(posedge clk_i or posedge rst_i)
     begin
-        if(rst_i) begin
-            btn_reg_input <= 24'h000000;
-            btn_reg_ready <= 1'b1;
-            bpm_theory <= 8'd0;
-        end else begin
-            bpm_theory <= (1000*(MIN_US/TP_CYCLE)/btn_reg_input);
-            if(btn_per_valid && btn_reg_ready)
-            begin
-                if(btn_per_i < BTN_PER_MIN)
-                    btn_reg_input = BTN_PER_MIN;
-                else
-                    btn_reg_input <= btn_per_i;
-                btn_reg_ready <= 1'b0;
-            end
-            if(bpm_valid && !btn_reg_ready)
-                btn_reg_ready <= 1'b1;
-        end
+        if(rst_i)
+            bpm_reg <= 0;
+        else
+            if(bpm_valid)
+                bpm_reg <= bpm_i;
     end
+
 
     always @(posedge clk_i)
     begin
         /* reset conditions */
         past_valid <= 1'b1;
-        if(rst_i) begin
-            assert(bpm_valid == 1'b0);
-            assume(btn_per_valid == 1'b0);
-        end
-
-        /* is result good ? */
-        if(bpm_valid) begin
-            if(btn_reg_input == 0)
-                assert(bpm_o == BPM_MAX);
-            else
-                if(bpm_theory >= BPM_MAX)
-                    assert(bpm_o == BPM_MAX)
-                else
-                    assert(bpm_o == bpm_theory);
-        end
 
         /* see one result */
-        cover(bpm_valid == 1);
+        cover(pwm_o == 1);
     end
 
 endmodule

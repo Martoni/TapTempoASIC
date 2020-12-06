@@ -1,6 +1,6 @@
 [options]
-mode bmc
-#mode cover
+#mode bmc
+mode cover
 depth 30
 
 [engines]
