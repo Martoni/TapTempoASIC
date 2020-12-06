@@ -1,0 +1,17 @@
+[options]
+mode bmc
+#mode cover
+depth 30
+
+[engines]
+smtbmc
+
+[script]
+ghdl --std=08 pwmgen.vhd taptempo_pkg.vhd -e pwmgen
+read -formal pwmgen_tb.v
+prep -top pwmgen_tb
+
+[files]
+../../../hdl/vhdl/pwmgen.vhd
+../../../hdl/vhdl/taptempo_pkg.vhd
+pwmgen_tb.v

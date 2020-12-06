@@ -1,5 +1,5 @@
 SBY=sby
-TARGET=per2bpm
+TARGET=pwmgen
 
 VHDL_SOURCES=	../../../hdl/vhdl/$(TARGET).vhd\
 				../../../hdl/vhdl/taptempo_pkg.vhd
