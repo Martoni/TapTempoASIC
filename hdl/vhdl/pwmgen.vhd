@@ -30,14 +30,15 @@ architecture pwmgen_1 of pwmgen is
     signal count : natural range 0 to BPM_MAX;
     signal pwmthreshold : natural range 0 to BPM_MAX;
     signal bpm_reg : natural range 0 to BPM_MAX;
+    constant BPM_RESET : natural := 128;
 begin
 
 -- Latching bpm_i on bpm_valid
 bpm_latch_p : process(clk_i, rst_i)
 begin
     if rst_i = '1' then
-        bpm_reg <= 0;
-        pwmthreshold <= 0;
+        bpm_reg <= BPM_RESET;
+        pwmthreshold <= BPM_RESET;
     elsif rising_edge(clk_i) then
         if bpm_valid = '1' then
             bpm_reg <= to_integer(unsigned(bpm_i));

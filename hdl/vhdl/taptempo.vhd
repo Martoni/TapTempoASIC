@@ -46,8 +46,6 @@ architecture taptempo_1 of taptempo is
     -- debounce
     signal btn_d : std_logic;
     component debounce is
-    generic(
-        DEBOUNCE_PER_NS: natural := 20_971_520);
     port (
         -- clock and reset
         clk_i : in std_logic;
@@ -177,6 +175,9 @@ begin
         tp_i => tp,
         bpm_i => bpm,
         bpm_valid => bpm_valid,
+--        pwm_o => open);
         pwm_o => pwm_o);
+
+--    pwm_o <= btn_d;
 
 end architecture taptempo_1;

@@ -8,8 +8,6 @@ library work;
 use work.taptempo_pkg.all;
 
 Entity debounce is
-    generic(
-        DEBOUNCE_PER_NS: natural := 20_971_520);
     port (
         -- clock and reset
         clk_i : in std_logic;
@@ -24,9 +22,7 @@ end entity;
 
 Architecture debounce_1 of debounce is
 
-    constant MAX_COUNT : natural := ((DEBOUNCE_PER_NS/TP_CYCLE)-1);
-    constant MAX_COUNT_SIZE : natural := log2ceil(MAX_COUNT);
-    signal counter : natural range 0 to MAX_COUNT;
+    signal counter : natural range 0 to DEB_MAX_COUNT;
 
     type t_state is (s_wait_low, s_wait_high, s_cnt_high, s_cnt_low);
     signal state_reg : t_state;
@@ -37,10 +33,12 @@ begin
     if rst_i = '1' then
         counter <= 0;
     elsif rising_edge(clk_i) then
-        if (state_reg = s_cnt_high) or (state_reg = s_cnt_low) then
-            counter <= counter + 1;
-        else
-            counter <= 0;
+        if (tp_i = '1') then
+            if (state_reg = s_cnt_high) or (state_reg = s_cnt_low) then
+                counter <= counter + 1;
+            else
+                counter <= 0;
+            end if;
         end if;
     end if;
 end process counter_p;
@@ -60,11 +58,11 @@ begin
                     state_reg <= s_cnt_low;
                 end if;
             when s_cnt_high =>
-                if(counter >= MAX_COUNT-1) then
+                if(counter >= DEB_MAX_COUNT) then
                     state_reg <= s_wait_high;
                 end if;
             when s_cnt_low =>
-                if(counter >= MAX_COUNT-1) then
+                if(counter >= DEB_MAX_COUNT) then
                     state_reg <= s_wait_low;
                 end if;
         end case;
