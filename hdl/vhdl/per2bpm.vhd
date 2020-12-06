@@ -45,7 +45,7 @@ begin
             ctrlcnt <= DIVIDENTWIDTH;
             state_reg <= s_init;
         elsif rising_edge(clk_i) then
-            case state_reg is 
+            case state_reg is
                 when s_init =>
                     if(to_integer(unsigned(btn_per_i)) < BTN_PER_MIN) then
                         divisor <= std_logic_vector(
@@ -85,4 +85,5 @@ begin
 
 bpm_o <= quotient(BPM_SIZE-1 downto 0);
 bpm_valid <= '1' when state_reg = s_result else '0';
+
 end Architecture per2bpm_1;
