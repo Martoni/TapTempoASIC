@@ -8,7 +8,7 @@ OBJS =	$(PWD)/../../hdl/vhdl/taptempo_pkg.vhd\
 		$(PWD)/../../hdl/vhdl/percount.vhd\
 		$(PWD)/../../hdl/vhdl/pwmgen.vhd\
 		$(PWD)/../../hdl/vhdl/rstgen.vhd\
-		$(PWD)/../../hdl/vhdl/timepulse.vhd\
+		$(PWD)/../../hdl/vhdl/timepulse.vhd
 
 TRELLIS=/usr/local/share/trellis
 
