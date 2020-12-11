@@ -1,4 +1,4 @@
-SIM=ghdl
+#SIM=ghdl
 #SIM=verilator
 #SIM=icarus
 

@@ -1,6 +1,6 @@
 #SIM=verilator
 #SIM=icarus
-SIM=ghdl
+#SIM=ghdl
 
 TOPLEVEL=taptempo
 
