@@ -14,8 +14,13 @@ TRELLIS=/usr/local/share/trellis
 
 all: ${TARGET}.bit
 
+# Convert design in Verilog
+$(TARGET).v : $(OBJS)
+	yosys -m ghdl -p 'ghdl --std=08 $(OBJS) -e $(TOP); write_verilog $(TARGET).v'
+
+# VHDL synthesis !
 $(TARGET).json: $(OBJS)
-	yosys -m ghdl -p 'ghdl --std=08 $(OBJS) -e $(TOP); synth_ecp5 -json $(TOP).json; show'
+	yosys -m ghdl -p 'ghdl --std=08 $(OBJS) -e $(TOP); synth_ecp5 -json $(TOP).json;'
 
 $(TARGET)_out.config: $(TARGET).json
 	nextpnr-ecp5 --25k --package CABGA256 --speed 6\
