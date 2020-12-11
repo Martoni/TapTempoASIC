@@ -47,7 +47,7 @@ end
 wire btn_d;
 debounce #(
     .PULSE_PER_NS(TP_CYCLE),
-    .DEBOUNCE_PER_NS(20_971_520) // 20ms
+    .DEBOUNCE_PER_NS(50_000_000) // 50ms
     ) inst_debounce (
     .clk_i(clk_i),
     .rst_i(rst),
