@@ -18,26 +18,9 @@ architecture taptempo_1 of taptempo is
 
     -- generate reset internally
     signal rst : std_logic;
-    component rstgen is
-    port (
-        -- clock input
-        clk_i : in std_logic;
-        -- rst output
-        rst_o : out std_logic
-    );
-    end component rstgen;
 
     -- TimePulse generation
     signal tp : std_logic;
-    component timepulse is
-    port(
-        -- clock and reset
-        clk_i : in std_logic;
-        rst_i : in std_logic;
-        -- timepulse output
-        tp_o : out std_logic
-    );
-    end component timepulse;
 
     -- Synchronize btn_i to avoid metastability
     signal btn_old : std_logic;
@@ -45,80 +28,25 @@ architecture taptempo_1 of taptempo is
 
     -- debounce
     signal btn_d : std_logic;
-    component debounce is
-    port (
-        -- clock and reset
-        clk_i : in std_logic;
-        rst_i : in std_logic;
-        -- inputs
-        tp_i : in std_logic;
-        btn_i: in std_logic;
-        -- outputs
-        btn_o : out std_logic
-    );
-    end component debounce;
 
     -- count tap period
     signal btn_per : std_logic_vector(BTN_PER_SIZE -1 downto 0);
     signal btn_per_valid : std_logic;
-    component percount is
-    port(
-        -- clock and reset
-        clk_i : in std_logic;
-        rst_i : in std_logic;
-        -- time plulse
-        tp_i : in std_logic;
-        -- input button
-        btn_i : in std_logic;
-        -- output period
-        btn_per_o : out std_logic_vector(BTN_PER_SIZE-1 downto 0);
-        btn_per_valid : out std_logic);
-    end component percount;
 
     -- convert period in bpm
     signal bpm : std_logic_vector(BPM_SIZE - 1 downto 0);
     signal bpm_valid : std_logic;
-    component per2bpm is
-        port(
-        -- clock and reset
-        clk_i : in std_logic;
-        rst_i : in std_logic;
-        -- inputs
-        btn_per_i : in std_logic_vector(BTN_PER_SIZE-1 downto 0);
-        btn_per_valid : in std_logic;
-        -- outputs
-        bpm_o : out std_logic_vector(BPM_SIZE-1 downto 0);
-        bpm_valid : out std_logic
-    );
-    end component per2bpm;
-
-    -- output pwm
-    component pwmgen is
-    generic(BPM_MAX : natural := 250);
-    port (
-        -- clock and reset
-        clk_i : in std_logic;
-        rst_i : in std_logic;
-        -- timepulse
-        tp_i : in std_logic;
-        -- input value
-        bpm_i : in std_logic_vector(BPM_SIZE-1 downto 0);
-        bpm_valid : in std_logic;
-        -- output
-        pwm_o : out std_logic);
-    end component pwmgen;
-
 
 begin
 
     -- generate reset internally
-    rstgen_connect : rstgen
+    rstgen_connect : entity work.rstgen
     port map (
         clk_i => clk_i,
         rst_o => rst);
 
     -- TimePulse generation
-    timepulse_connect : timepulse
+    timepulse_connect : entity work.timepulse
     port map (
         clk_i => clk_i,
         rst_i => rst,
@@ -137,7 +65,7 @@ begin
     end process btn_sync_p;
 
     -- debounce
-    debounce_connect : debounce
+    debounce_connect : entity work.debounce
     port map (
         clk_i => clk_i,
         rst_i => rst,
@@ -147,7 +75,7 @@ begin
 
 
     -- count tap period
-    percount_connect : percount
+    percount_connect : entity work.percount
     port map (
         clk_i => clk_i,
         rst_i => rst,
@@ -157,7 +85,7 @@ begin
         btn_per_valid => btn_per_valid);
 
     -- convert period in bpm
-    per2bpm_connect : per2bpm
+    per2bpm_connect : entity work.per2bpm
     port map (
         clk_i => clk_i,
         rst_i => rst,
@@ -168,7 +96,7 @@ begin
 
 
     -- generate pwm
-    pwmgen_connect : pwmgen
+    pwmgen_connect : entity work.pwmgen
     port map (
         clk_i => clk_i,
         rst_i => rst,
