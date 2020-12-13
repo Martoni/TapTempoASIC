@@ -25,10 +25,10 @@ Architecture per2bpm_1 of per2bpm is
     constant DIVIDENTWIDTH : natural := log2ceil(1 + (MIN_US/TP_CYCLE)*1000);
     constant REGWIDTH : natural := BTN_PER_SIZE + DIVIDENTWIDTH;
 
-    signal divisor : std_logic_vector(REGWIDTH-1 downto 0);
-    signal remainder : std_logic_vector(REGWIDTH-1 downto 0);
+    signal divisor : unsigned(REGWIDTH-1 downto 0);
+    signal remainder : unsigned(REGWIDTH-1 downto 0);
 
-    signal quotient : std_logic_vector(REGWIDTH-1 downto 0);
+    signal quotient : unsigned(REGWIDTH-1 downto 0);
     signal ctrlcnt : natural range 0 to DIVIDENTWIDTH + 1;
 
     type t_state is (s_init, s_compute, s_result);
@@ -37,6 +37,7 @@ Architecture per2bpm_1 of per2bpm is
 begin
 
     div_process : process(clk_i, rst_i)
+        constant ZEROS : unsigned(DIVIDENTWIDTH-1 downto 0) := (others => '0');
     begin
         if rst_i = '1' then
             divisor <= (others => '0');
@@ -47,21 +48,20 @@ begin
         elsif rising_edge(clk_i) then
             case state_reg is
                 when s_init =>
-                    if(to_integer(unsigned(btn_per_i)) < BTN_PER_MIN) then
-                        divisor <= std_logic_vector(
-                            to_unsigned(BTN_PER_MIN, BTN_PER_SIZE)) & ZEROS(DIVIDENTWIDTH-1 downto 0);
+                    if (to_integer(unsigned(btn_per_i)) < BTN_PER_MIN) then
+                        divisor <= to_unsigned(BTN_PER_MIN, BTN_PER_SIZE) & ZEROS;
                     else
-                        divisor <= btn_per_i & ZEROS(DIVIDENTWIDTH-1 downto 0);
+                        divisor <= unsigned(btn_per_i) & ZEROS;
                     end if;
-                    remainder <= std_logic_vector(to_unsigned((MIN_US/TP_CYCLE)*1000, REGWIDTH));
+                    remainder <= to_unsigned((MIN_US / TP_CYCLE) * 1000, REGWIDTH);
                     quotient <= (others => '0');
                     ctrlcnt <= DIVIDENTWIDTH;
                     if (btn_per_valid = '1') then
                         state_reg <= s_compute;
                     end if;
                 when s_compute =>
-                    if(unsigned(divisor) <= unsigned(remainder)) then
-                        remainder <= std_logic_vector(unsigned(remainder) - unsigned(divisor));
+                    if divisor <= remainder then
+                        remainder <= remainder - divisor;
                         quotient <= quotient(REGWIDTH-2 downto 0) & "1";
                     else
                         quotient <= quotient(REGWIDTH-2 downto 0) & "0";
@@ -83,7 +83,7 @@ begin
         end if;
     end process div_process;
 
-bpm_o <= quotient(BPM_SIZE-1 downto 0);
+bpm_o <= std_logic_vector(quotient(BPM_SIZE-1 downto 0));
 bpm_valid <= '1' when state_reg = s_result else '0';
 
 end Architecture per2bpm_1;
