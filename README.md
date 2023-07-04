@@ -43,7 +43,7 @@ SIM=ghdl make
 
 ## Open source foundries
 
-- [TinyTapeout https://tinytapeout.com]
+- [TinyTapeout](https://tinytapeout.com)
 - [SKY 130](https://github.com/google/skywater-pdk)
 
 ## Tutorial
