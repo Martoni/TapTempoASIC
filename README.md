@@ -43,9 +43,7 @@ SIM=ghdl make
 
 ## Open source foundries
 
-- [$100
-  ASIC](https://hackaday.io/project/152709-itsy-chipsy-make-your-own-100-chip)
-  !
+- [TinyTapeout https://tinytapeout.com]
 - [SKY 130](https://github.com/google/skywater-pdk)
 
 ## Tutorial
